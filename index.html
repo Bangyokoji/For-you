@@ -15,9 +15,9 @@
         :root { --pink: #ff85a2; --cream: #fdf5e6; --dark-pink: #ff4d79; --brown: #8d6e63; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        body { 
-            background-color: var(--cream); 
-            font-family: 'Quicksand', sans-serif; 
+        body {
+            background-color: var(--cream);
+            font-family: 'Quicksand', sans-serif;
             overflow: hidden; height: 100vh; width: 100vw;
             background-image: url('https://lh3.googleusercontent.com/d/1y0F5zvIMw4I6c8HiaUJ2YrtpqDH-QlIn');
             background-size: cover; background-position: center;
@@ -78,6 +78,7 @@
             position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;
             overflow: hidden;
         }
+        /* mirror hanya untuk kamera depan */
         #cam-preview-wrapper.mirrored { transform: scaleX(-1); }
 
         #ucapan-video, #toga-canvas {
@@ -85,23 +86,19 @@
             object-fit: cover;
         }
         
-        /* Toga super bebas */
         #draggable-toga {
             position: absolute;
-            top: 50%;
-            left: 50%;
+            top: 0; left: 0;
             width: 120px;
             height: auto;
             z-index: 100;
             touch-action: none;
             cursor: grab;
             filter: drop-shadow(0 0 12px #ffd700);
-            transform-origin: center;
+            transform-origin: 0 0;
             will-change: transform;
         }
-        #draggable-toga:active {
-            cursor: grabbing;
-        }
+        #draggable-toga:active { cursor: grabbing; }
 
         .ucapan-header {
             position: absolute; top: 8%; z-index: 10; font-family: 'Caveat'; font-size: 2.5rem;
@@ -115,8 +112,9 @@
         .polaroid-frame { background: white; padding: 10px 10px 30px 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; height: 100%; cursor: pointer; }
         .polaroid-frame img { width: 100%; height: 100%; object-fit: cover; border: 1px solid #eee; pointer-events: none; }
         
-        .btn-camera-ctrl { position: absolute; z-index: 20; background: rgba(0,0,0,0.4); color: white; border: 1.5px solid white; border-radius: 30px; font-weight: bold; padding: 10px 20px; backdrop-filter: blur(10px); }
-        .btn-close-ucapan { top: 25px; left: 20px; } 
+        .btn-camera-ctrl { position: absolute; z-index: 20; background: rgba(0,0,0,0.4); color: white; border: 1.5px solid white; border-radius: 30px; font-weight: bold; padding: 10px 20px; backdrop-filter: blur(10px); cursor: pointer; }
+        .btn-close-ucapan { top: 25px; left: 20px; }
+        .btn-switch-camera { bottom: 25px; right: 25px; }
 
         #message-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 20px; z-index: 21000; display: none; text-align: center; width: 80%; max-width: 280px; border: 3px solid var(--pink); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     </style>
@@ -133,7 +131,7 @@
 
     <!-- Mode Kamera -->
     <div id="camera-ucapan-container">
-        <div id="cam-preview-wrapper" class="mirrored">
+        <div id="cam-preview-wrapper">
             <video id="ucapan-video" autoplay playsinline></video>
             <canvas id="toga-canvas"></canvas>
         </div>
@@ -146,6 +144,7 @@
             <div class="swiper-pagination"></div>
         </div>
         <button class="btn-camera-ctrl btn-close-ucapan" onclick="stopUcapan()">← Kembali</button>
+        <button class="btn-camera-ctrl btn-switch-camera" onclick="switchCamera()">🔄</button>
     </div>
 
     <!-- Screen 1 & 2 -->
@@ -203,7 +202,7 @@
         const vinyl = document.getElementById('vinyl');
         const bgVideo = document.getElementById('bgVideo');
 
-        // ==================== KAMERA + TOGA SUPER BEBAS ====================
+        // ==================== KAMERA + TOGA BEBAS + SWITCH CAMERA ====================
         (function() {
             let cameraStream = null;
             const videoEl = document.getElementById("ucapan-video");
@@ -211,9 +210,11 @@
             const togaCtx = togaCanvas.getContext("2d");
             const previewWrapper = document.getElementById("cam-preview-wrapper");
             const togaImg = document.getElementById("draggable-toga");
+            let currentFacingMode = "user"; // default depan
             let animationFrameId;
+            let togaState = { x: 0, y: 0, scale: 1, rotation: 0 };
 
-            // Sparkle effect
+            // Sparkles
             const sparkles = [];
             for (let i = 0; i < 30; i++) {
                 sparkles.push({
@@ -248,77 +249,70 @@
                 animationFrameId = requestAnimationFrame(drawSparkles);
             }
 
-            // State transform
-            let currentX = window.innerWidth / 2 - 60; // initial center
-            let currentY = window.innerHeight / 2 - 60;
-            let currentScale = 1;
-            let currentRotation = 0;
-
-            function updateTogaTransform() {
-                togaImg.style.left = '0px';
-                togaImg.style.top = '0px';
-                togaImg.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${currentRotation}deg) scale(${currentScale})`;
+            function updateToga() {
+                togaImg.style.transform = `translate(${togaState.x}px, ${togaState.y}px) rotate(${togaState.rotation}deg) scale(${togaState.scale})`;
             }
 
             function initTogaInteraction() {
-                // Set initial position
-                currentX = window.innerWidth / 2 - 60;
-                currentY = window.innerHeight / 2 - 60;
-                updateTogaTransform();
+                // initial posisi tengah
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+                togaState.x = w/2 - 60;
+                togaState.y = h/2 - 60;
+                togaState.scale = 1;
+                togaState.rotation = 0;
+                updateToga();
 
-                let isDragging = false;
-                let startX, startY;
-                let startLeft, startTop;
+                let dragging = false;
+                let startX, startY, startStateX, startStateY;
 
-                // For pinch/rotate
-                let initialPinchDistance = 0;
-                let initialRotation = 0;
-                let startRotation = 0;
+                // Pinch/rotate variables
+                let initDist = 0;
+                let initAngle = 0;
                 let startScale = 1;
+                let startRotation = 0;
 
-                function getDistance(t1, t2) {
+                function getDist(t1, t2) {
                     return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
                 }
-
                 function getAngle(t1, t2) {
                     return Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
                 }
 
-                // Single finger drag
                 togaImg.addEventListener('pointerdown', (e) => {
                     if (e.pointerType === 'mouse' && e.button !== 0) return;
                     e.preventDefault();
-                    isDragging = true;
+                    dragging = true;
                     startX = e.clientX;
                     startY = e.clientY;
-                    startLeft = currentX;
-                    startTop = currentY;
+                    startStateX = togaState.x;
+                    startStateY = togaState.y;
                     togaImg.setPointerCapture(e.pointerId);
                 });
 
                 window.addEventListener('pointermove', (e) => {
-                    if (!isDragging) return;
+                    if (!dragging) return;
                     const dx = e.clientX - startX;
                     const dy = e.clientY - startY;
-                    currentX = startLeft + dx;
-                    currentY = startTop + dy;
-                    updateTogaTransform();
+                    togaState.x = startStateX + dx;
+                    togaState.y = startStateY + dy;
+                    updateToga();
                 });
 
                 window.addEventListener('pointerup', () => {
-                    isDragging = false;
+                    dragging = false;
                 });
 
-                // Gesture (two fingers) for scale & rotate
+                // Two-finger gestures
                 togaImg.addEventListener('touchstart', (e) => {
                     if (e.touches.length === 2) {
                         e.preventDefault();
                         const t1 = e.touches[0];
                         const t2 = e.touches[1];
-                        initialPinchDistance = getDistance(t1, t2);
-                        initialRotation = getAngle(t1, t2);
-                        startScale = currentScale;
-                        startRotation = currentRotation;
+                        initDist = getDist(t1, t2);
+                        initAngle = getAngle(t1, t2);
+                        startScale = togaState.scale;
+                        startRotation = togaState.rotation;
                     }
                 });
 
@@ -327,38 +321,57 @@
                         e.preventDefault();
                         const t1 = e.touches[0];
                         const t2 = e.touches[1];
-                        const newDist = getDistance(t1, t2);
+                        const newDist = getDist(t1, t2);
                         const newAngle = getAngle(t1, t2);
                         
-                        // Scale
-                        if (initialPinchDistance > 0) {
-                            let newScale = startScale * (newDist / initialPinchDistance);
-                            currentScale = Math.min(Math.max(newScale, 0.2), 5.0); // bebas tapi wajar
+                        if (initDist > 0) {
+                            let newScale = startScale * (newDist / initDist);
+                            togaState.scale = Math.min(Math.max(newScale, 0.2), 5.0);
                         }
                         
-                        // Rotate
-                        let deltaAngle = newAngle - initialRotation;
-                        currentRotation = startRotation + deltaAngle;
-                        // Normalize rotation? Bebas, tidak perlu dibatasi.
-                        
-                        updateTogaTransform();
+                        let deltaAngle = newAngle - initAngle;
+                        togaState.rotation = startRotation + deltaAngle;
+                        updateToga();
                     }
                 });
 
                 togaImg.addEventListener('touchend', () => {
-                    initialPinchDistance = 0;
+                    initDist = 0;
                 });
             }
+
+            window.switchCamera = async function() {
+                currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+                // Restart stream dengan mode baru
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(t => t.stop());
+                }
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
+                    });
+                    cameraStream = stream;
+                    videoEl.srcObject = stream;
+                    // Toggle mirror
+                    if (currentFacingMode === "user") {
+                        previewWrapper.classList.add("mirrored");
+                    } else {
+                        previewWrapper.classList.remove("mirrored");
+                    }
+                } catch (e) {
+                    alert("Gagal mengganti kamera");
+                }
+            };
 
             window.startUcapan = async function() {
                 try {
                     if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
                     const stream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }
+                        video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
                     });
                     cameraStream = stream;
                     videoEl.srcObject = stream;
-                    previewWrapper.classList.add('mirrored');
+                    previewWrapper.classList.toggle('mirrored', currentFacingMode === "user");
 
                     document.getElementById('sc2').style.display = 'none';
                     document.getElementById('bgVideo').style.display = 'none';
