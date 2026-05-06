@@ -11,9 +11,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
-    <!-- MediaPipe Vision Library - Mesin Utama Filter -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.js" crossorigin="anonymous"></script>
-
     <style>
         :root { --pink: #ff85a2; --cream: #fdf5e6; --dark-pink: #ff4d79; --brown: #8d6e63; }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -72,26 +69,44 @@
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* MODE KAMERA */
-        #camera-ucapan-container { position: fixed; inset: 0; z-index: 18000; display: none; flex-direction: column; align-items: center; background: #000; }
+        #camera-ucapan-container {
+            position: fixed; inset: 0; z-index: 18000; display: none;
+            flex-direction: column; align-items: center; background: #000;
+        }
         
-        /* Container Mirroring Video & Canvas */
-        #cam-preview-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden; }
+        #cam-preview-wrapper {
+            position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;
+            overflow: hidden;
+        }
         #cam-preview-wrapper.mirrored { transform: scaleX(-1); }
 
-        #ucapan-video, #toga-canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-        
-        .btn-toggle-toga {
-            position: absolute; top: 20px; right: 20px; width: 50px; height: 50px;
-            border-radius: 50%; background: rgba(0, 0, 0, 0.4); border: 2px solid white;
-            color: white; font-size: 1.5rem; cursor: pointer; z-index: 100;
-            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        #ucapan-video, #toga-canvas {
+            position: absolute; inset: 0; width: 100%; height: 100%;
+            object-fit: cover;
         }
-        .btn-toggle-toga.active { background: var(--pink); border-color: #ffd700; transform: scale(1.1); }
-        #toga-img { display: none; }
+        
+        /* Toga super bebas */
+        #draggable-toga {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120px;
+            height: auto;
+            z-index: 100;
+            touch-action: none;
+            cursor: grab;
+            filter: drop-shadow(0 0 12px #ffd700);
+            transform-origin: center;
+            will-change: transform;
+        }
+        #draggable-toga:active {
+            cursor: grabbing;
+        }
 
         .ucapan-header {
-            position: absolute; top: 8%; z-index: 10; font-family: 'Caveat'; font-size: 2.8rem; color: white;
-            padding: 10px 30px; border-radius: 50px; background: rgba(0, 0, 0, 0.4); border: 2px solid white;
+            position: absolute; top: 8%; z-index: 10; font-family: 'Caveat'; font-size: 2.5rem;
+            color: white; padding: 10px 30px; border-radius: 50px;
+            background: rgba(0,0,0,0.4); border: 2px solid white;
             text-align: center; width: 90%; max-width: 400px; pointer-events: none;
         }
 
@@ -102,7 +117,6 @@
         
         .btn-camera-ctrl { position: absolute; z-index: 20; background: rgba(0,0,0,0.4); color: white; border: 1.5px solid white; border-radius: 30px; font-weight: bold; padding: 10px 20px; backdrop-filter: blur(10px); }
         .btn-close-ucapan { top: 25px; left: 20px; } 
-        .btn-switch-camera { bottom: 25px; right: 25px; font-size: 1.2rem; }
 
         #message-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 20px; z-index: 21000; display: none; text-align: center; width: 80%; max-width: 280px; border: 3px solid var(--pink); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     </style>
@@ -117,27 +131,24 @@
     <div id="close-area" onclick="backToBoard()" style="position:fixed; inset:0; z-index:4000; display:none;"></div>
     <button id="global-reveal-btn" style="position:fixed; bottom:10%; left:50%; transform:translate(-50%, 0) scale(0); background:var(--dark-pink); color:white; border:none; padding:12px 25px; border-radius:50px; font-weight:bold; z-index:8000; display:none;" onclick="openQuiz()">Buka Pesan Sayang 💌</button>
 
-    <!-- Mode Kamera Container -->
+    <!-- Mode Kamera -->
     <div id="camera-ucapan-container">
         <div id="cam-preview-wrapper" class="mirrored">
             <video id="ucapan-video" autoplay playsinline></video>
             <canvas id="toga-canvas"></canvas>
         </div>
         
-        <!-- Gambar Toga Link GitHub -->
-        <img id="toga-img" src="https://raw.githubusercontent.com/Bangyokoji/ArthaFreshSejahtera/926161e17b68b8e1af9d9bd02bd9bc85ee269ecb/1778046603580.png" crossorigin="anonymous">
-        <button class="btn-toggle-toga" onclick="toggleTogaFilter()">🎓</button>
+        <img id="draggable-toga" src="https://raw.githubusercontent.com/Bangyokoji/For-you/7e6e04cf14e68d5925fccf66264853b3ad754b7d/1778046603580.png" crossorigin="anonymous">
 
         <div class="ucapan-header">CONGRATULATIONS SAYANG</div>
         <div class="swiper mySwiper">
             <div class="swiper-wrapper" id="ucapan-wrapper"></div>
             <div class="swiper-pagination"></div>
         </div>
-        <button class="btn-camera-ctrl btn-switch-camera" onclick="switchCamera()">🔄</button>
         <button class="btn-camera-ctrl btn-close-ucapan" onclick="stopUcapan()">← Kembali</button>
     </div>
 
-    <!-- UI Screens -->
+    <!-- Screen 1 & 2 -->
     <div id="sc1" class="screen">
         <div class="glass-card">
             <div style="font-size:80px; cursor:pointer;" onclick="toSc2()">📩</div>
@@ -153,40 +164,19 @@
         </div>
     </div>
 
-    <!-- Board Dunia Kita (7 Kartu Asli) -->
+    <!-- Board -->
     <div id="board">
         <h1 class="title">Our Beautiful Chapter ❤️</h1>
-        <div class="card p1" data-q="Kamu bangga sama diri sendiri hari ini? 🎓" onclick="zoomCard(this)">
-            <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5"></div>
-            <div class="message-box"><p>Cie lulus! Proud of you sayang! 🎓✨</p></div>
-        </div>
-        <div class="card p2" data-q="Kamu sayang aku kan? ❤️" onclick="zoomCard(this)">
-            <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1"></div>
-            <div class="message-box"><p>I love you more than anything! 😍❤️</p></div>
-        </div>
-        <div class="card p3" data-q="Sering-sering senyum ya? 😊" onclick="zoomCard(this)">
-            <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM"></div>
-            <div class="message-box"><p>Senyum kamu itu penyemangat aku. 😜❤️</p></div>
-        </div>
-        <div class="card p4" data-q="Jangan lupa istirahat ya? 😴" onclick="zoomCard(this)">
-            <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh"></div>
-            <div class="message-box"><p>Bobo nyenyak, mimpiin aku ya! 😴💤</p></div>
-        </div>
-        <div class="card p5" data-q="jangan ke seringan mbotok yang,mbok kamu sering mbotok?" onclick="zoomCard(this)">
-            <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"></div>
-            <div class="message-box"><p>hihihi becanda sayangg,kamu ngga mandi be tetep cakep,tapi tetep mandi penting buat kebersihan😊🌸</p></div>
-        </div>
-        <div class="card p6" data-q="Semangat buat kedepannya? 🤝" onclick="zoomCard(this)">
-            <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP"></div>
-            <div class="message-box"><p>Aku selalu ada di samping kamu. 🏆💖</p></div>
-        </div>
-        <div class="card p7" id="card7" data-q="Rating buat web buatan aku? 🌸" onclick="zoomCard(this)">
-            <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9"></div>
-            <div class="message-box"><p>Happy Graduation Sayang! I'm so proud! 🎓💖</p></div>
-        </div>
+        <div class="card p1" data-q="Kamu bangga sama diri sendiri hari ini? 🎓" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5"></div><div class="message-box"><p>Cie lulus! Proud of you sayang! 🎓✨</p></div></div>
+        <div class="card p2" data-q="Kamu sayang aku kan? ❤️" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1"></div><div class="message-box"><p>I love you more than anything! 😍❤️</p></div></div>
+        <div class="card p3" data-q="Sering-sering senyum ya? 😊" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM"></div><div class="message-box"><p>Senyum kamu itu penyemangat aku. 😜❤️</p></div></div>
+        <div class="card p4" data-q="Jangan lupa istirahat ya? 😴" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh"></div><div class="message-box"><p>Bobo nyenyak, mimpiin aku ya! 😴💤</p></div></div>
+        <div class="card p5" data-q="jangan ke seringan mbotok yang,mbok kamu sering mbotok?" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"></div><div class="message-box"><p>hihihi becanda sayangg,kamu ngga mandi be tetep cakep,tapi tetep mandi penting buat kebersihan😊🌸</p></div></div>
+        <div class="card p6" data-q="Semangat buat kedepannya? 🤝" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP"></div><div class="message-box"><p>Aku selalu ada di samping kamu. 🏆💖</p></div></div>
+        <div class="card p7" id="card7" data-q="Rating buat web buatan aku? 🌸" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9"></div><div class="message-box"><p>Happy Graduation Sayang! I'm so proud! 🎓💖</p></div></div>
     </div>
 
-    <!-- Modals & Popups -->
+    <!-- Popup Pesan -->
     <div id="message-popup"><p id="msg-text"></p><button class="btn-main" onclick="document.getElementById('message-popup').style.display='none'" style="width:auto; padding:8px 20px;">Tutup 💖</button></div>
     
     <div id="quiz-overlay" style="position:fixed; inset:0; background:rgba(255,255,255,0.2); display:none; justify-content:center; align-items:center; z-index:9500; backdrop-filter:blur(2px);">
@@ -213,25 +203,247 @@
         const vinyl = document.getElementById('vinyl');
         const bgVideo = document.getElementById('bgVideo');
 
-        // ==================== SISTEM AI FILTER TOGA (STABIL) ====================
-        let faceLandmarker;
-        let isAIReady = false;
+        // ==================== KAMERA + TOGA SUPER BEBAS ====================
+        (function() {
+            let cameraStream = null;
+            const videoEl = document.getElementById("ucapan-video");
+            const togaCanvas = document.getElementById("toga-canvas");
+            const togaCtx = togaCanvas.getContext("2d");
+            const previewWrapper = document.getElementById("cam-preview-wrapper");
+            const togaImg = document.getElementById("draggable-toga");
+            let animationFrameId;
 
-        async function loadAI() {
-            try {
-                const vision = await mediapipe.tasks.vision;
-                const filesetResolver = await vision.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
-                faceLandmarker = await vision.FaceLandmarker.createFromOptions(filesetResolver, {
-                    baseOptions: { modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`, delegate: "GPU" },
-                    runningMode: "VIDEO", numFaces: 1
+            // Sparkle effect
+            const sparkles = [];
+            for (let i = 0; i < 30; i++) {
+                sparkles.push({
+                    x: Math.random(),
+                    y: Math.random(),
+                    size: Math.random() * 2 + 1,
+                    speed: Math.random() * 0.5 + 0.2,
+                    opacity: Math.random()
                 });
-                isAIReady = true;
-                console.log("AI SYSTEM LOADED ✅");
-            } catch (e) { console.error("AI Init Fail:", e); }
-        }
-        // Load AI segera setelah halaman dibuka
-        loadAI();
+            }
 
+            function drawSparkles() {
+                if (videoEl.videoWidth === 0) return;
+                togaCanvas.width = videoEl.videoWidth;
+                togaCanvas.height = videoEl.videoHeight;
+                togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
+                
+                sparkles.forEach(s => {
+                    s.y -= s.speed;
+                    if (s.y < -0.1) {
+                        s.y = 1.1;
+                        s.x = Math.random();
+                    }
+                    const px = s.x * togaCanvas.width;
+                    const py = s.y * togaCanvas.height;
+                    togaCtx.fillStyle = `rgba(255, 215, 0, ${s.opacity})`;
+                    togaCtx.beginPath();
+                    togaCtx.arc(px, py, s.size, 0, Math.PI * 2);
+                    togaCtx.fill();
+                });
+                
+                animationFrameId = requestAnimationFrame(drawSparkles);
+            }
+
+            // State transform
+            let currentX = window.innerWidth / 2 - 60; // initial center
+            let currentY = window.innerHeight / 2 - 60;
+            let currentScale = 1;
+            let currentRotation = 0;
+
+            function updateTogaTransform() {
+                togaImg.style.left = '0px';
+                togaImg.style.top = '0px';
+                togaImg.style.transform = `translate(${currentX}px, ${currentY}px) rotate(${currentRotation}deg) scale(${currentScale})`;
+            }
+
+            function initTogaInteraction() {
+                // Set initial position
+                currentX = window.innerWidth / 2 - 60;
+                currentY = window.innerHeight / 2 - 60;
+                updateTogaTransform();
+
+                let isDragging = false;
+                let startX, startY;
+                let startLeft, startTop;
+
+                // For pinch/rotate
+                let initialPinchDistance = 0;
+                let initialRotation = 0;
+                let startRotation = 0;
+                let startScale = 1;
+
+                function getDistance(t1, t2) {
+                    return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+                }
+
+                function getAngle(t1, t2) {
+                    return Math.atan2(t2.clientY - t1.clientY, t2.clientX - t1.clientX) * 180 / Math.PI;
+                }
+
+                // Single finger drag
+                togaImg.addEventListener('pointerdown', (e) => {
+                    if (e.pointerType === 'mouse' && e.button !== 0) return;
+                    e.preventDefault();
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    startLeft = currentX;
+                    startTop = currentY;
+                    togaImg.setPointerCapture(e.pointerId);
+                });
+
+                window.addEventListener('pointermove', (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    currentX = startLeft + dx;
+                    currentY = startTop + dy;
+                    updateTogaTransform();
+                });
+
+                window.addEventListener('pointerup', () => {
+                    isDragging = false;
+                });
+
+                // Gesture (two fingers) for scale & rotate
+                togaImg.addEventListener('touchstart', (e) => {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const t1 = e.touches[0];
+                        const t2 = e.touches[1];
+                        initialPinchDistance = getDistance(t1, t2);
+                        initialRotation = getAngle(t1, t2);
+                        startScale = currentScale;
+                        startRotation = currentRotation;
+                    }
+                });
+
+                togaImg.addEventListener('touchmove', (e) => {
+                    if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const t1 = e.touches[0];
+                        const t2 = e.touches[1];
+                        const newDist = getDistance(t1, t2);
+                        const newAngle = getAngle(t1, t2);
+                        
+                        // Scale
+                        if (initialPinchDistance > 0) {
+                            let newScale = startScale * (newDist / initialPinchDistance);
+                            currentScale = Math.min(Math.max(newScale, 0.2), 5.0); // bebas tapi wajar
+                        }
+                        
+                        // Rotate
+                        let deltaAngle = newAngle - initialRotation;
+                        currentRotation = startRotation + deltaAngle;
+                        // Normalize rotation? Bebas, tidak perlu dibatasi.
+                        
+                        updateTogaTransform();
+                    }
+                });
+
+                togaImg.addEventListener('touchend', () => {
+                    initialPinchDistance = 0;
+                });
+            }
+
+            window.startUcapan = async function() {
+                try {
+                    if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }
+                    });
+                    cameraStream = stream;
+                    videoEl.srcObject = stream;
+                    previewWrapper.classList.add('mirrored');
+
+                    document.getElementById('sc2').style.display = 'none';
+                    document.getElementById('bgVideo').style.display = 'none';
+                    document.getElementById('camera-ucapan-container').style.display = 'flex';
+                    if (audio.paused) audio.play();
+                    vinyl.classList.add('spinning');
+
+                    initSwiper();
+                    drawSparkles();
+                    initTogaInteraction();
+                } catch (e) {
+                    alert("Izin kamera ditolak 🎥");
+                }
+            };
+
+            window.stopUcapan = function() {
+                if (cameraStream) {
+                    cameraStream.getTracks().forEach(track => track.stop());
+                    cameraStream = null;
+                }
+                cancelAnimationFrame(animationFrameId);
+                document.getElementById('camera-ucapan-container').style.display = 'none';
+                document.getElementById('sc2').style.display = 'flex';
+                document.getElementById('bgVideo').style.display = 'block';
+            };
+
+            function initSwiper() {
+                const PHOTO_ASSETS = [
+                    "https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5",
+                    "https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1",
+                    "https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM",
+                    "https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh",
+                    "https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d",
+                    "https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP",
+                    "https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9",
+                    "https://lh3.googleusercontent.com/d/1jJa0dCK1dslCDaJu4OUgAAaYf0h_F0XC",
+                    "https://lh3.googleusercontent.com/d/1r_TwJf6xyNc1rMmtHuKa7GeBNQt8wMGK",
+                    "https://lh3.googleusercontent.com/d/1FBiCFQLslYO0l2VCezADBGjZyKpdpI3K",
+                    "https://lh3.googleusercontent.com/d/1ukYQ3KUPjrwZji37Y9RahbtppdV6nl6h",
+                    "https://lh3.googleusercontent.com/d/1PtSLiyfo3YUsKccL8o8nVrI6KBfjkFWe",
+                    "https://lh3.googleusercontent.com/d/1rLIXZ8hKvDsvpHiw32p2S1Ybg-PJxDam",
+                    "https://lh3.googleusercontent.com/d/1YGcZ4EV5F7FPngownc-VjKpBGIMJB--U"
+                ];
+                const wrapper = document.getElementById('ucapan-wrapper');
+                wrapper.innerHTML = '';
+                PHOTO_ASSETS.forEach((src, idx) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide';
+                    slide.innerHTML = `<div class="polaroid-frame" onclick="showMsg(${idx})"><img src="${src}"></div>`;
+                    wrapper.appendChild(slide);
+                });
+                new Swiper(".mySwiper", {
+                    effect: "coverflow",
+                    centeredSlides: true,
+                    slidesPerView: "auto",
+                    loop: true,
+                    coverflowEffect: { rotate: 30, stretch: 0, depth: 100, modifier: 1, slideShadows: true },
+                    pagination: { el: ".swiper-pagination", clickable: true }
+                });
+            }
+
+            window.showMsg = function(idx) {
+                const msgs = [
+                    "Cie lulus! Proud of you sayang! 🎓✨",
+                    "I love you more than anything! 😍❤️",
+                    "Senyum kamu itu penyemangat aku. 😜❤️",
+                    "Bobo nyenyak, mimpiin aku ya! 😴💤",
+                    "Kamu tetep cakep meski belum mandi hihi 😊🌸",
+                    "Aku selalu ada di samping kamu. 🏆💖",
+                    "Happy Graduation Sayang! I'm so proud! 🎓💖",
+                    "Masa depan kita cerah bareng ya sayang! ✨",
+                    "Terima kasih sudah berjuang sampai sini! 💌",
+                    "Kamu itu versi terbaik dalam hidupku. 🧸❤️",
+                    "Jangan pernah capek buat jadi hebat ya! 💪",
+                    "Hati aku cuma buat kamu selamanya. 🔐💖",
+                    "Setiap detik sama kamu itu berharga banget. ⏳❤️",
+                    "I Love You, Thalita Sayang! ♾️🎓"
+                ];
+                document.getElementById('msg-text').innerText = msgs[idx];
+                document.getElementById('message-popup').style.display = 'block';
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.8 } });
+            };
+        })();
+
+        // ==================== FITUR UTAMA ====================
         function createHeart(e) {
             const heart = document.createElement('div');
             heart.className = 'petal click-heart'; heart.innerHTML = '❤️';
@@ -288,8 +500,6 @@
         }
 
         function openQuiz() {
-            const btnNo = document.getElementById('btnNo');
-            gsap.set(btnNo, { x: 0, y: 0 });
             document.getElementById('quiz-text').innerText = currentActive.getAttribute('data-q');
             const isCard7 = currentActive.id === "card7";
             document.getElementById('std-buttons').style.display = isCard7 ? "none" : "block";
@@ -303,111 +513,6 @@
             document.getElementById('letter-overlay').style.display='flex'; const text = "Happy Graduation Sayangku... ❤️\n\nAku bangga banget sama kamu. Teruslah bersinar, lovee youu moreee sayanggg✨🎓";
             let i=0; function type() { if(i<text.length){ document.getElementById("typewriter-text").innerHTML += text[i]==='\n'?'<br>':text[i]; i++; setTimeout(type,50); } } type();
         }
-
-        // ==================== LOGIKA KAMERA & TOGA (FIXED) ====================
-        (function() {
-            let cameraStream = null;
-            let togaEnabled = false;
-            let requestAnimationFrameId;
-            let currentFacingMode = "user";
-
-            const videoEl = document.getElementById("ucapan-video");
-            const togaCanvas = document.getElementById("toga-canvas");
-            const togaCtx = togaCanvas.getContext("2d");
-            const togaImg = document.getElementById("toga-img");
-            const previewWrapper = document.getElementById("cam-preview-wrapper");
-
-            window.startUcapan = async function() {
-                try {
-                    if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } } });
-                    cameraStream = stream; videoEl.srcObject = stream;
-                    
-                    if (currentFacingMode === "user") previewWrapper.classList.add('mirrored');
-                    else previewWrapper.classList.remove('mirrored');
-
-                    document.getElementById('sc2').style.display='none'; document.getElementById('bgVideo').style.display='none';
-                    document.getElementById('camera-ucapan-container').style.display='flex';
-                    if (audio.paused) audio.play(); vinyl.classList.add('spinning');
-                    
-                    initSwiper();
-                } catch (e) { alert("Izin kamera ditolak 🎥"); }
-            };
-
-            window.toggleTogaFilter = function() {
-                if (!isAIReady) { console.log("AI Still loading..."); return; }
-                togaEnabled = !togaEnabled; 
-                document.querySelector('.btn-toggle-toga').classList.toggle('active', togaEnabled);
-                if (togaEnabled) renderLoop();
-                else togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
-            };
-
-            function renderLoop() {
-                if (!togaEnabled || !faceLandmarker || videoEl.paused) return;
-                
-                // Sinkronkan Ukuran Canvas
-                if (videoEl.videoWidth > 0 && togaCanvas.width !== videoEl.videoWidth) {
-                    togaCanvas.width = videoEl.videoWidth;
-                    togaCanvas.height = videoEl.videoHeight;
-                }
-
-                const results = faceLandmarker.detectForVideo(videoEl, performance.now());
-                togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
-
-                if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-                    const l = results.faceLandmarks[0];
-                    
-                    // Titik landmark: 10 (Dahi Atas), 234 (Pipi Kiri), 454 (Pipi Kanan), 33 (Mata Kiri), 263 (Mata Kanan)
-                    const faceWidth = Math.hypot(l[454].x - l[234].x, l[454].y - l[234].y) * togaCanvas.width;
-                    const togaW = faceWidth * 2.0; // Perbesar toga agar pas
-                    const togaH = togaW * (togaImg.naturalHeight / togaImg.naturalWidth);
-                    const angle = Math.atan2(l[263].y - l[33].y, l[263].x - l[33].x);
-
-                    togaCtx.save();
-                    // Letakkan di titik dahi atas (titik 10)
-                    togaCtx.translate(l[10].x * togaCanvas.width, l[10].y * togaCanvas.height);
-                    togaCtx.rotate(angle);
-                    // Gambar toga dengan offset Y agar berada di atas kepala
-                    togaCtx.drawImage(togaImg, -togaW / 2, -togaH * 0.95, togaW, togaH);
-                    togaCtx.restore();
-                }
-                requestAnimationFrameId = requestAnimationFrame(renderLoop);
-            }
-
-            window.switchCamera = function() {
-                currentFacingMode = (currentFacingMode === "user") ? "environment" : "user";
-                togaEnabled = false; document.querySelector('.btn-toggle-toga').classList.remove('active');
-                startUcapan();
-            };
-
-            window.stopUcapan = function() {
-                if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
-                togaEnabled = false; cancelAnimationFrame(requestAnimationFrameId);
-                togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
-                document.getElementById('camera-ucapan-container').style.display='none';
-                document.getElementById('sc2').style.display='flex'; document.getElementById('bgVideo').style.display='block';
-            };
-
-            function initSwiper() {
-                const PHOTO_ASSETS = [
-                    "https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5","https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1","https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM","https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh","https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d","https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP","https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9",
-                    "https://lh3.googleusercontent.com/d/1jJa0dCK1dslCDaJu4OUgAAaYf0h_F0XC","https://lh3.googleusercontent.com/d/1r_TwJf6xyNc1rMmtHuKa7GeBNQt8wMGK","https://lh3.googleusercontent.com/d/1FBiCFQLslYO0l2VCezADBGjZyKpdpI3K","https://lh3.googleusercontent.com/d/1ukYQ3KUPjrwZji37Y9RahbtppdV6nl6h","https://lh3.googleusercontent.com/d/1PtSLiyfo3YUsKccL8o8nVrI6KBfjkFWe","https://lh3.googleusercontent.com/d/1rLIXZ8hKvDsvpHiw32p2S1Ybg-PJxDam","https://lh3.googleusercontent.com/d/1YGcZ4EV5F7FPngownc-VjKpBGIMJB--U"
-                ];
-                const wrapper = document.getElementById('ucapan-wrapper'); wrapper.innerHTML = '';
-                PHOTO_ASSETS.forEach((src, idx) => {
-                    const slide = document.createElement('div'); slide.className = 'swiper-slide';
-                    slide.innerHTML = `<div class="polaroid-frame" onclick="showMsg(${idx})"><img src="${src}"></div>`;
-                    wrapper.appendChild(slide);
-                });
-                new Swiper(".mySwiper", { effect:"coverflow", centeredSlides:true, slidesPerView:"auto", coverflowEffect:{rotate:30, stretch:0, depth:100, modifier:1, slideShadows:true} });
-            }
-
-            window.showMsg = function(idx) {
-                const msgs = ["Cie lulus! Proud of you sayang! 🎓✨", "I love you more than anything! 😍❤️", "Senyum kamu itu penyemangat aku. 😜❤️", "Bobo nyenyak, mimpiin aku ya! 😴💤", "Kamu tetep cakep meski belum mandi hihi 😊🌸", "Aku selalu ada di samping kamu. 🏆💖", "Happy Graduation Sayang! I'm so proud! 🎓💖", "Masa depan kita cerah bareng ya sayang! ✨", "Terima kasih sudah berjuang sampai sini! 💌", "Kamu itu versi terbaik dalam hidupku. 🧸❤️", "Jangan pernah capek buat jadi hebat ya! 💪", "Hati aku cuma buat kamu selamanya. 🔐💖", "Setiap detik sama kamu itu berharga banget. ⏳❤️", "I Love You, Thalita Sayang! ♾️🎓"];
-                document.getElementById('msg-text').innerText = msgs[idx]; document.getElementById('message-popup').style.display='block';
-                confetti({ particleCount: 60, spread: 70, origin: { y: 0.8 } });
-            };
-        })();
     </script>
 </body>
 </html>
