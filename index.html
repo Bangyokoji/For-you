@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Congrats thalitaa sayangg 🎓❤️</title>
+    <title>Congrats Thalitaa sayanggg 🎓❤️</title>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Quicksand:wght@600&display=swap" rel="stylesheet">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- MediaPipe Vision Library - Mesin Utama Filter -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/vision_bundle.js" crossorigin="anonymous"></script>
 
     <style>
         :root { --pink: #ff85a2; --cream: #fdf5e6; --dark-pink: #ff4d79; --brown: #8d6e63; }
@@ -17,317 +23,391 @@
             font-family: 'Quicksand', sans-serif; 
             overflow: hidden; height: 100vh; width: 100vw;
             background-image: url('https://lh3.googleusercontent.com/d/1y0F5zvIMw4I6c8HiaUJ2YrtpqDH-QlIn');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
+            background-size: cover; background-position: center;
         }
 
-        /* Latar video untuk screen awal */
         #bgVideo {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            transform: translate(-50%, -50%);
-            object-fit: cover;
-            z-index: 8500; /* Di bawah screen tapi di atas background utama */
-            display: block;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            background: rgba(255, 255, 255, 0.1); 
-            z-index: 0;
+            position: fixed; top: 50%; left: 50%; min-width: 100%; min-height: 100%;
+            width: auto; height: auto; transform: translate(-50%, -50%);
+            object-fit: cover; z-index: 8500; display: block;
         }
 
         .petal { position: fixed; top: -10%; z-index: 1; pointer-events: none; color: var(--pink); font-size: 1.5rem; }
 
-        #music-control { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: none; cursor: pointer; }
-        .vinyl { width: 45px; height: 45px; background: #333; border-radius: 50%; border: 3px solid #444; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .btn-back-floating {
+            position: fixed; top: 25px; left: 20px; z-index: 9500;
+            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px);
+            border: 2px solid white; color: var(--dark-pink);
+            padding: 8px 15px; border-radius: 50px; font-weight: bold;
+            display: none; cursor: pointer;
+        }
+
+        .screen { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9000; background: transparent; padding: 20px; text-align: center; }
+        .glass-card { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); padding: 30px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .btn-main { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; max-width: 260px; }
+
+        #board { position: relative; width: 100%; height: 100%; display: none; z-index: 10; overflow: hidden; }
+        .title { text-align: center; font-family: 'Caveat'; font-size: 2.5rem; color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.6); padding-top: 60px; pointer-events: none; position: relative; z-index: 5; }
+        .card { position: absolute; width: 105px; height: 135px; cursor: pointer; z-index: 100; }
+        .card-inner { position: relative; width: 100%; height: 100%; background: white; padding: 6px 6px 18px 6px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
+        .card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .card::after { content: ""; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 15px; background: rgba(255, 133, 162, 0.6); z-index: 30; }
+
+        .p1 { top: 18%; left: 10%; transform: rotate(-5deg); }
+        .p2 { top: 15%; right: 10%; transform: rotate(5deg); }
+        .p3 { top: 35%; left: 35%; transform: rotate(-3deg); }
+        .p4 { top: 52%; left: 8%; transform: rotate(7deg); }
+        .p5 { top: 54%; right: 8%; transform: rotate(-6deg); }
+        .p6 { top: 75%; left: 15%; transform: rotate(-4deg); }
+        .p7 { top: 73%; right: 15%; transform: rotate(8deg); }
+
+        .message-box { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0); width: 180px; background: white; padding: 15px; border-radius: 15px; border: 2px solid var(--pink); opacity: 0; transition: 0.4s; z-index: 6000; }
+        .message-box.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .message-box p { font-family: 'Caveat'; font-size: 1.2rem; font-weight: bold; text-align: center; color: #333; }
+
+        #music-control { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: none; }
+        .vinyl { width: 45px; height: 45px; background: #333; border-radius: 50%; border: 3px solid #444; display: flex; align-items: center; justify-content: center; }
         .vinyl::after { content: ""; width: 12px; height: 12px; background: var(--pink); border-radius: 50%; border: 2px solid white; }
         .spinning { animation: spin 3s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Screen dibuat transparan agar video terlihat */
-        .screen { 
-            position: fixed; 
-            inset: 0; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 9000; 
-            background: transparent; 
-            transition: 0.5s; 
-            padding: 20px; 
-            text-align: center; 
-        }
-
-        /* Kotak konten agar teks lebih jelas terbaca di atas video */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            padding: 30px;
-            border-radius: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-
-        .btn-main { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 15px; box-shadow: 0 5px 15px rgba(255,133,162,0.4); }
-
-        #board { position: relative; width: 100%; height: 100%; display: none; z-index: 10; overflow: hidden; }
-        .title { text-align: center; font-family: 'Caveat'; font-size: 2.5rem; color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.6); padding-top: 20px; pointer-events: none; z-index: 5; position: relative; }
-
-        .card { position: absolute; width: 105px; height: 135px; cursor: pointer; z-index: 100; }
-        .card-inner { position: relative; width: 100%; height: 100%; background: white; padding: 6px 6px 18px 6px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); z-index: 20; }
-        .card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        /* MODE KAMERA */
+        #camera-ucapan-container { position: fixed; inset: 0; z-index: 18000; display: none; flex-direction: column; align-items: center; background: #000; }
         
-        .card::after {
-            content: ""; position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-            width: 40px; height: 15px; background: rgba(255, 133, 162, 0.6); z-index: 30;
-        }
+        /* Container Mirroring Video & Canvas */
+        #cam-preview-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden; }
+        #cam-preview-wrapper.mirrored { transform: scaleX(-1); }
 
-        .message-box {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0);
-            width: 180px; background: white; padding: 15px; border-radius: 15px;
-            border: 2px solid var(--pink); box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            opacity: 0; visibility: hidden; transition: 0.4s; z-index: 6000;
-        }
-        .message-box.active { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .message-box p { font-family: 'Caveat'; font-size: 1.2rem; color: #333; text-align: center; line-height: 1.2; font-weight: bold;}
-
-        .p1 { top: 15%; left: 10%; transform: rotate(-5deg); }
-        .p2 { top: 12%; right: 10%; transform: rotate(5deg); }
-        .p3 { top: 32%; left: 35%; transform: rotate(-3deg); }
-        .p4 { top: 50%; left: 8%; transform: rotate(7deg); }
-        .p5 { top: 52%; right: 8%; transform: rotate(-6deg); }
-        .p6 { top: 72%; left: 15%; transform: rotate(-4deg); }
-        .p7 { top: 70%; right: 15%; transform: rotate(8deg); }
-
-        #letter-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.98); display: none; z-index: 11000; flex-direction: column; align-items: center; justify-content: center; padding: 30px; text-align: center; }
-        .letter-content { font-family: 'Caveat'; font-size: 1.6rem; color: #5d4037; line-height: 1.4; max-width: 90%; }
-
-        #global-reveal-btn { position: fixed; bottom: 10%; left: 50%; transform: translate(-50%, 0) scale(0); background: var(--dark-pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; z-index: 8000; display: none; box-shadow: 0 10px 20px rgba(255,77,121,0.4); }
-
-        #quiz-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.2); display: none; justify-content: center; align-items: center; z-index: 9500; backdrop-filter: blur(2px); }
-        .quiz-card { background: white; padding: 25px; border-radius: 25px; text-align: center; width: 280px; border: 4px solid var(--pink); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .btn-ans { padding: 10px 18px; border-radius: 12px; border: none; cursor: pointer; font-weight: bold; margin: 5px; }
-        .yes { background: var(--pink); color: white; }
-        .no { background: #eee; color: #777; }
-
-        #close-area { position: fixed; inset: 0; z-index: 4000; display: none; background: transparent; }
+        #ucapan-video, #toga-canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
         
-        .click-heart { position: fixed; pointer-events: none; color: var(--dark-pink); font-size: 20px; z-index: 12000; animation: floatUp 1s forwards; }
-        @keyframes floatUp { to { transform: translateY(-50px) opacity: 0; } }
+        .btn-toggle-toga {
+            position: absolute; top: 20px; right: 20px; width: 50px; height: 50px;
+            border-radius: 50%; background: rgba(0, 0, 0, 0.4); border: 2px solid white;
+            color: white; font-size: 1.5rem; cursor: pointer; z-index: 100;
+            display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px);
+        }
+        .btn-toggle-toga.active { background: var(--pink); border-color: #ffd700; transform: scale(1.1); }
+        #toga-img { display: none; }
+
+        .ucapan-header {
+            position: absolute; top: 8%; z-index: 10; font-family: 'Caveat'; font-size: 2.8rem; color: white;
+            padding: 10px 30px; border-radius: 50px; background: rgba(0, 0, 0, 0.4); border: 2px solid white;
+            text-align: center; width: 90%; max-width: 400px; pointer-events: none;
+        }
+
+        .swiper { position: absolute; bottom: 8%; width: 100%; height: 260px; z-index: 10; padding-bottom: 20px; }
+        .swiper-slide { width: 150px; height: 195px; display: flex; justify-content: center; align-items: center; }
+        .polaroid-frame { background: white; padding: 10px 10px 30px 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); width: 100%; height: 100%; cursor: pointer; }
+        .polaroid-frame img { width: 100%; height: 100%; object-fit: cover; border: 1px solid #eee; pointer-events: none; }
+        
+        .btn-camera-ctrl { position: absolute; z-index: 20; background: rgba(0,0,0,0.4); color: white; border: 1.5px solid white; border-radius: 30px; font-weight: bold; padding: 10px 20px; backdrop-filter: blur(10px); }
+        .btn-close-ucapan { top: 25px; left: 20px; } 
+        .btn-switch-camera { bottom: 25px; right: 25px; font-size: 1.2rem; }
+
+        #message-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 20px; z-index: 21000; display: none; text-align: center; width: 80%; max-width: 280px; border: 3px solid var(--pink); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
     </style>
 </head>
 <body onclick="createHeart(event)">
 
-    <audio id="lagu" loop>
-        <source src="https://raw.githubusercontent.com/Bangyokoji/For-you/128404a69d31eac059a044f05b140b5055b8f3b0/Nadhif%20Basalamah%20-%20kota%20ini%20tak%20sama%20tanpamu%20(Official%20Lyric%20Video)%20-%20(320%20Kbps).mp3" type="audio/mpeg">
-    </audio>
+    <audio id="lagu" loop><source src="https://raw.githubusercontent.com/Bangyokoji/For-you/128404a69d31eac059a044f05b140b5055b8f3b0/Nadhif%20Basalamah%20-%20kota%20ini%20tak%20sama%20tanpamu%20(Official%20Lyric%20Video)%20-%20(320%20Kbps).mp3" type="audio/mpeg"></audio>
+    <video id="bgVideo" autoplay muted loop playsinline><source src="https://raw.githubusercontent.com/Bangyokoji/For-you/4c439865a73d44cb052f5814a22e5129ad0ec2c3/PinDown.io_@ginagliss1473_1777946922.mp4" type="video/mp4"></video>
 
-    <!-- Video Background Global -->
-    <video id="bgVideo" autoplay muted loop playsinline>
-        <source src="https://raw.githubusercontent.com/Bangyokoji/For-you/4c439865a73d44cb052f5814a22e5129ad0ec2c3/PinDown.io_@ginagliss1473_1777946922.mp4" type="video/mp4">
-    </video>
-
+    <button class="btn-back-floating" id="global-back-btn" onclick="backToModeSelection()">← Kembali</button>
     <div id="music-control" onclick="toggleMusic()"><div class="vinyl" id="vinyl"></div></div>
-    <div id="close-area" onclick="backToBoard()"></div>
-    <button id="global-reveal-btn" onclick="openQuiz()">Buka Pesan Sayang 💌</button>
+    <div id="close-area" onclick="backToBoard()" style="position:fixed; inset:0; z-index:4000; display:none;"></div>
+    <button id="global-reveal-btn" style="position:fixed; bottom:10%; left:50%; transform:translate(-50%, 0) scale(0); background:var(--dark-pink); color:white; border:none; padding:12px 25px; border-radius:50px; font-weight:bold; z-index:8000; display:none;" onclick="openQuiz()">Buka Pesan Sayang 💌</button>
 
-    <div id="letter-overlay">
-        <div class="letter-content" id="typewriter-text"></div>
-        <button class="btn-main" onclick="location.reload()" style="margin-top:25px;">Mainkan Lagi ❤️</button>
-    </div>
-
-    <div id="quiz-overlay">
-        <div class="quiz-card">
-            <p id="quiz-text" style="margin-bottom: 20px; font-weight: bold;"></p>
-            <div id="std-buttons">
-                <button class="btn-ans yes" onclick="solveQuiz()">Iya bub ❤️</button>
-                <button class="btn-ans no" onmouseover="dodge(this)" onclick="dodge(this)">Engga 😜</button>
-            </div>
-            <div id="rating-buttons" style="display:none; grid-template-columns: repeat(3, 1fr); gap:8px;">
-                <button class="btn-ans yes" onclick="sendRating('10')">10</button>
-                <button class="btn-ans yes" onclick="sendRating('100')">100</button>
-                <button class="btn-ans yes" onclick="sendRating('Infinity')">∞ ❤️</button>
-            </div>
+    <!-- Mode Kamera Container -->
+    <div id="camera-ucapan-container">
+        <div id="cam-preview-wrapper" class="mirrored">
+            <video id="ucapan-video" autoplay playsinline></video>
+            <canvas id="toga-canvas"></canvas>
         </div>
+        
+        <!-- Gambar Toga Link GitHub -->
+        <img id="toga-img" src="https://raw.githubusercontent.com/Bangyokoji/ArthaFreshSejahtera/926161e17b68b8e1af9d9bd02bd9bc85ee269ecb/1778046603580.png" crossorigin="anonymous">
+        <button class="btn-toggle-toga" onclick="toggleTogaFilter()">🎓</button>
+
+        <div class="ucapan-header">CONGRATULATIONS SAYANG</div>
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper" id="ucapan-wrapper"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+        <button class="btn-camera-ctrl btn-switch-camera" onclick="switchCamera()">🔄</button>
+        <button class="btn-camera-ctrl btn-close-ucapan" onclick="stopUcapan()">← Kembali</button>
     </div>
 
-    <!-- Screen 1: dapat suratt dari ultramen sayangg -->
+    <!-- UI Screens -->
     <div id="sc1" class="screen">
         <div class="glass-card">
-            <div style="font-size: 80px; cursor: pointer;" onclick="toSc2()">📩</div>
-            <p style="color: var(--dark-pink); margin-top: 15px; font-weight:bold;">dapat pesan dari ultramen sayang</p>
+            <div style="font-size:80px; cursor:pointer;" onclick="toSc2()">📩</div>
+            <p style="color:var(--dark-pink); margin-top:15px; font-weight:bold;">ADA PESAN UNTUKMU!</p>
         </div>
     </div>
 
-    <!-- Screen 2: Siapkan hatimu yahh yanggg? -->
-    <div id="sc2" class="screen" style="display: none;">
+    <div id="sc2" class="screen" style="display:none;">
         <div class="glass-card">
-            <h2 style="font-family: 'Caveat'; font-size: 2.2rem; color: #5d4037;">siapp siapp sayang meluncurr 🧸</h2>
+            <h2 style="font-family:'Caveat'; font-size:2.2rem; color:#5d4037;">Siapkan hatimu ya? 🧸</h2>
             <button class="btn-main" onclick="startApp()">MASUK KE DUNIA KITA ✨</button>
+            <button class="btn-main" style="background:linear-gradient(135deg, #ff4d79, #ff85a2); margin-top:10px;" onclick="startUcapan()">KARTU UCAPAN KAMERA 💌</button>
         </div>
     </div>
 
+    <!-- Board Dunia Kita (7 Kartu Asli) -->
     <div id="board">
         <h1 class="title">Our Beautiful Chapter ❤️</h1>
-
-        <!-- Daftar Card Polaroid tetap sama -->
         <div class="card p1" data-q="Kamu bangga sama diri sendiri hari ini? 🎓" onclick="zoomCard(this)">
             <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5"></div>
             <div class="message-box"><p>Cie lulus! Proud of you sayang! 🎓✨</p></div>
         </div>
-
         <div class="card p2" data-q="Kamu sayang aku kan? ❤️" onclick="zoomCard(this)">
             <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1"></div>
             <div class="message-box"><p>I love you more than anything! 😍❤️</p></div>
         </div>
-
         <div class="card p3" data-q="Sering-sering senyum ya? 😊" onclick="zoomCard(this)">
             <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM"></div>
             <div class="message-box"><p>Senyum kamu itu penyemangat aku. 😜❤️</p></div>
         </div>
-
         <div class="card p4" data-q="Jangan lupa istirahat ya? 😴" onclick="zoomCard(this)">
             <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh"></div>
             <div class="message-box"><p>Bobo nyenyak, mimpiin aku ya! 😴💤</p></div>
         </div>
-
-        <div class="card p5" data-q="yang emang kamu sering mbotok?😁" onclick="zoomCard(this)">
+        <div class="card p5" data-q="jangan ke seringan mbotok yang,mbok kamu sering mbotok?" onclick="zoomCard(this)">
             <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"></div>
-            <div class="message-box"><p>hihihi gapapaa sayang,kursng kurangin mbotok e 🙏😁🌸</p></div>
+            <div class="message-box"><p>hihihi becanda sayangg,kamu ngga mandi be tetep cakep,tapi tetep mandi penting buat kebersihan😊🌸</p></div>
         </div>
-
         <div class="card p6" data-q="Semangat buat kedepannya? 🤝" onclick="zoomCard(this)">
             <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP"></div>
             <div class="message-box"><p>Aku selalu ada di samping kamu. 🏆💖</p></div>
         </div>
-
         <div class="card p7" id="card7" data-q="Rating buat web buatan aku? 🌸" onclick="zoomCard(this)">
             <div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9"></div>
             <div class="message-box"><p>Happy Graduation Sayang! I'm so proud! 🎓💖</p></div>
         </div>
     </div>
 
+    <!-- Modals & Popups -->
+    <div id="message-popup"><p id="msg-text"></p><button class="btn-main" onclick="document.getElementById('message-popup').style.display='none'" style="width:auto; padding:8px 20px;">Tutup 💖</button></div>
+    
+    <div id="quiz-overlay" style="position:fixed; inset:0; background:rgba(255,255,255,0.2); display:none; justify-content:center; align-items:center; z-index:9500; backdrop-filter:blur(2px);">
+        <div class="quiz-card" style="background:white; padding:25px; border-radius:25px; text-align:center; width:280px; border:4px solid var(--pink);">
+            <p id="quiz-text" style="margin-bottom:20px; font-weight:bold;"></p>
+            <div id="std-buttons">
+                <button class="btn-ans" style="padding:10px 18px; border-radius:12px; border:none; font-weight:bold; background:var(--pink); color:white; margin:5px;" onclick="solveQuiz()">Iya bub ❤️</button>
+                <button id="btnNo" class="btn-ans" style="padding:10px 18px; border-radius:12px; border:none; font-weight:bold; background:#eee; color:#777; margin:5px; transition:0.1s;" onpointerenter="dodge(this)" onclick="dodge(this)">Engga 😜</button>
+            </div>
+            <div id="rating-buttons" style="display:none; grid-template-columns:repeat(3,1fr); gap:8px;">
+                <button class="btn-ans" style="background:var(--pink); color:white; padding:10px; border-radius:12px; border:none; font-weight:bold;" onclick="sendRating('10')">10</button>
+                <button class="btn-ans" style="background:var(--pink); color:white; padding:10px; border-radius:12px; border:none; font-weight:bold;" onclick="sendRating('100')">100</button>
+                <button class="btn-ans" style="background:var(--pink); color:white; padding:10px; border-radius:12px; border:none; font-weight:bold;" onclick="sendRating('Infinity')">∞ ❤️</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="letter-overlay" style="position:fixed; inset:0; background:rgba(255,255,255,0.98); display:none; z-index:11000; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center;"><div class="letter-content" id="typewriter-text" style="font-family:'Caveat'; font-size:1.6rem; color:#5d4037; line-height:1.4;"></div><button class="btn-main" onclick="location.reload()" style="margin-top:25px; width:auto;">Mainkan Lagi ❤️</button></div>
+
     <script>
-        const nomorWA = "6285713813068"; 
+        const nomorWA = "6285713813068";
         let currentActive = null;
         const audio = document.getElementById('lagu');
         const vinyl = document.getElementById('vinyl');
         const bgVideo = document.getElementById('bgVideo');
 
+        // ==================== SISTEM AI FILTER TOGA (STABIL) ====================
+        let faceLandmarker;
+        let isAIReady = false;
+
+        async function loadAI() {
+            try {
+                const vision = await mediapipe.tasks.vision;
+                const filesetResolver = await vision.FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
+                faceLandmarker = await vision.FaceLandmarker.createFromOptions(filesetResolver, {
+                    baseOptions: { modelAssetPath: `https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task`, delegate: "GPU" },
+                    runningMode: "VIDEO", numFaces: 1
+                });
+                isAIReady = true;
+                console.log("AI SYSTEM LOADED ✅");
+            } catch (e) { console.error("AI Init Fail:", e); }
+        }
+        // Load AI segera setelah halaman dibuka
+        loadAI();
+
         function createHeart(e) {
             const heart = document.createElement('div');
-            heart.className = 'click-heart';
-            heart.innerHTML = '❤️';
-            heart.style.left = e.clientX + 'px';
-            heart.style.top = e.clientY + 'px';
+            heart.className = 'petal click-heart'; heart.innerHTML = '❤️';
+            heart.style.cssText = `position:fixed; pointer-events:none; color:var(--dark-pink); font-size:20px; z-index:12000; left:${e.clientX}px; top:${e.clientY}px; animation:floatUp 1s forwards;`;
             document.body.appendChild(heart);
             setTimeout(() => heart.remove(), 1000);
         }
 
-        function createPetal() {
+        setInterval(() => {
+            if (document.getElementById('camera-ucapan-container').style.display === 'flex') return;
             const petals = ['🌸', '❤️', '✨'];
             const petal = document.createElement('div');
             petal.className = 'petal';
             petal.innerHTML = petals[Math.floor(Math.random() * petals.length)];
             petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.top = '-10%';
             document.body.appendChild(petal);
             gsap.to(petal, { y: window.innerHeight + 50, x: "random(-50, 50)", rotation: 360, duration: 5, ease: "none", onComplete: () => petal.remove() });
-        }
-        setInterval(createPetal, 700);
+        }, 700);
 
-        function toggleMusic() {
-            if (audio.paused) { audio.play(); vinyl.classList.add('spinning'); } 
-            else { audio.pause(); vinyl.classList.remove('spinning'); }
-        }
-
-        function toSc2() { 
-            gsap.to("#sc1", { opacity: 0, duration: 0.5, onComplete: () => { 
-                document.getElementById('sc1').style.display = 'none'; 
-                document.getElementById('sc2').style.display = 'flex';
-                gsap.from("#sc2 .glass-card", { scale: 0.8, opacity: 0, duration: 0.5 });
-            }}); 
-        }
-
+        function toggleMusic() { audio.paused ? (audio.play(), vinyl.classList.add('spinning')) : (audio.pause(), vinyl.classList.remove('spinning')); }
+        function toSc2() { gsap.to("#sc1", { opacity:0, duration:0.5, onComplete:() => { document.getElementById('sc1').style.display='none'; document.getElementById('sc2').style.display='flex'; }}); }
+        
         function startApp() { 
-            audio.play().catch(() => {});
-            document.getElementById('music-control').style.display = 'flex';
-            vinyl.classList.add('spinning');
-            
-            // Animasi hilangkan video dan masuk ke board
-            gsap.to([bgVideo, "#sc2"], { opacity: 0, duration: 0.8, onComplete: () => { 
-                bgVideo.style.display = 'none';
-                document.getElementById('sc2').style.display = 'none'; 
-                document.getElementById('board').style.display = 'block';
-                gsap.from(".card", { y: 1000, rotation: 45, stagger: 0.1, duration: 1, ease: "back.out" });
+            audio.play().catch(()=>{}); document.getElementById('music-control').style.display='flex'; document.getElementById('global-back-btn').style.display='block'; vinyl.classList.add('spinning');
+            gsap.to([bgVideo, "#sc2"], { opacity:0, duration:0.8, onComplete:() => { bgVideo.style.display='none'; document.getElementById('sc2').style.display='none'; document.getElementById('board').style.display='block'; gsap.from(".card", { y: 1000, rotation: 45, stagger: 0.1, duration: 1, ease: "back.out" }); }});
+        }
+
+        function backToModeSelection() { 
+            gsap.to("#board", { opacity:0, duration:0.5, onComplete:() => {
+                document.getElementById('board').style.display='none'; document.getElementById('global-back-btn').style.display='none';
+                document.getElementById('bgVideo').style.display='block'; document.getElementById('sc2').style.display='flex';
+                gsap.to([bgVideo, "#sc2"], { opacity: 1, duration:0.5 }); document.getElementById('board').style.opacity = 1;
             }});
         }
 
-        // ... Sisa fungsi JavaScript lainnya (zoomCard, backToBoard, dll) tetap sama ...
         function zoomCard(el) {
-            if (currentActive) return;
-            currentActive = el;
-            el.style.zIndex = "5000";
-            document.getElementById('close-area').style.display = 'block';
-            if(el.id === 'card7') confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-            gsap.to(el, { x: (window.innerWidth/2 - el.getBoundingClientRect().left - 52), y: (window.innerHeight/2 - el.getBoundingClientRect().top - 67), scale: 2.3, rotation: 0, duration: 0.6, ease: "power2.out", onComplete: () => {
-                const btn = document.getElementById('global-reveal-btn');
-                btn.style.display = "block";
-                gsap.to(btn, { scale: 1, duration: 0.3 });
-            }});
+            if (currentActive) return; currentActive = el; el.style.zIndex="5000"; document.getElementById('global-back-btn').style.display='none'; document.getElementById('close-area').style.display='block';
+            if(el.id === 'card7') confetti({ particleCount:150, spread:70, origin:{y:0.6} });
+            gsap.to(el, { x:(window.innerWidth/2 - el.getBoundingClientRect().left - 52), y:(window.innerHeight/2 - el.getBoundingClientRect().top - 67), scale:2.3, rotation:0, duration:0.6 });
+            gsap.to("#global-reveal-btn", { scale:1, display:'block', duration:0.3 });
         }
+
         function backToBoard() {
-            if (!currentActive) return;
-            const el = currentActive;
-            el.querySelector('.message-box').classList.remove('active');
-            const btn = document.getElementById('global-reveal-btn');
-            gsap.to(btn, { scale: 0, duration: 0.2, onComplete: () => btn.style.display = "none" });
-            gsap.to(el, { x: 0, y: 0, scale: 1, rotation: "random(-10, 10)", duration: 0.5, onComplete: () => {
-                el.style.zIndex = "100";
-                currentActive = null;
-                document.getElementById('close-area').style.display = 'none';
-            }});
+            const el = currentActive; el.querySelector('.message-box').classList.remove('active');
+            gsap.to("#global-reveal-btn", { scale:0, display:'none', duration:0.2 });
+            gsap.to(el, { x:0, y:0, scale:1, rotation:"random(-10,10)", duration:0.5, onComplete:() => { el.style.zIndex="100"; currentActive=null; document.getElementById('close-area').style.display='none'; document.getElementById('global-back-btn').style.display='block'; }});
         }
+
+        function dodge(b) {
+            const randomX = (Math.random() - 0.5) * 250;
+            const randomY = (Math.random() - 0.5) * 250;
+            gsap.to(b, { x: randomX, y: randomY, duration: 0.2, ease: "power2.out" });
+        }
+
         function openQuiz() {
+            const btnNo = document.getElementById('btnNo');
+            gsap.set(btnNo, { x: 0, y: 0 });
             document.getElementById('quiz-text').innerText = currentActive.getAttribute('data-q');
             const isCard7 = currentActive.id === "card7";
             document.getElementById('std-buttons').style.display = isCard7 ? "none" : "block";
             document.getElementById('rating-buttons').style.display = isCard7 ? "grid" : "none";
-            document.getElementById('quiz-overlay').style.display = 'flex';
+            document.getElementById('quiz-overlay').style.display='flex';
         }
-        function solveQuiz() {
-            document.getElementById('quiz-overlay').style.display = 'none';
-            document.getElementById('global-reveal-btn').style.display = "none";
-            currentActive.querySelector('.message-box').classList.add('active');
-        }
-        function sendRating(val) {
-            window.open(`https://wa.me/${nomorWA}?text=Sayang! Aku kasih rating ${val} buat webnya! 🎓❤️`, '_blank');
-            solveQuiz();
-            setTimeout(showFinalLetter, 2000);
-        }
+
+        function solveQuiz() { document.getElementById('quiz-overlay').style.display='none'; document.getElementById('global-reveal-btn').style.display="none"; currentActive.querySelector('.message-box').classList.add('active'); }
+        function sendRating(v) { window.open(`https://wa.me/${nomorWA}?text=Sayang! Aku kasih rating ${v} buat webnya! 🎓❤️`, '_blank'); solveQuiz(); setTimeout(showFinalLetter, 2000); }
         function showFinalLetter() {
-            document.getElementById('letter-overlay').style.display = 'flex';
-            const text = "Happy Graduation Sayangku... ❤️\n\nAku bangga banget sama kamu. Teruslah bersinar, i lovee youuy moreee sayangkuuuu ✨🎓";
-            let i = 0;
-            function typeWriter() {
-                if (i < text.length) {
-                    document.getElementById("typewriter-text").innerHTML += text.charAt(i) === '\n' ? '<br>' : text.charAt(i);
-                    i++; setTimeout(typeWriter, 50);
-                }
-            }
-            typeWriter();
+            document.getElementById('letter-overlay').style.display='flex'; const text = "Happy Graduation Sayangku... ❤️\n\nAku bangga banget sama kamu. Teruslah bersinar, lovee youu moreee sayanggg✨🎓";
+            let i=0; function type() { if(i<text.length){ document.getElementById("typewriter-text").innerHTML += text[i]==='\n'?'<br>':text[i]; i++; setTimeout(type,50); } } type();
         }
-        function dodge(btn) { gsap.to(btn, { x: "random(-50, 50)", y: "random(-50, 50)", duration: 0.1 }); }
+
+        // ==================== LOGIKA KAMERA & TOGA (FIXED) ====================
+        (function() {
+            let cameraStream = null;
+            let togaEnabled = false;
+            let requestAnimationFrameId;
+            let currentFacingMode = "user";
+
+            const videoEl = document.getElementById("ucapan-video");
+            const togaCanvas = document.getElementById("toga-canvas");
+            const togaCtx = togaCanvas.getContext("2d");
+            const togaImg = document.getElementById("toga-img");
+            const previewWrapper = document.getElementById("cam-preview-wrapper");
+
+            window.startUcapan = async function() {
+                try {
+                    if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } } });
+                    cameraStream = stream; videoEl.srcObject = stream;
+                    
+                    if (currentFacingMode === "user") previewWrapper.classList.add('mirrored');
+                    else previewWrapper.classList.remove('mirrored');
+
+                    document.getElementById('sc2').style.display='none'; document.getElementById('bgVideo').style.display='none';
+                    document.getElementById('camera-ucapan-container').style.display='flex';
+                    if (audio.paused) audio.play(); vinyl.classList.add('spinning');
+                    
+                    initSwiper();
+                } catch (e) { alert("Izin kamera ditolak 🎥"); }
+            };
+
+            window.toggleTogaFilter = function() {
+                if (!isAIReady) { console.log("AI Still loading..."); return; }
+                togaEnabled = !togaEnabled; 
+                document.querySelector('.btn-toggle-toga').classList.toggle('active', togaEnabled);
+                if (togaEnabled) renderLoop();
+                else togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
+            };
+
+            function renderLoop() {
+                if (!togaEnabled || !faceLandmarker || videoEl.paused) return;
+                
+                // Sinkronkan Ukuran Canvas
+                if (videoEl.videoWidth > 0 && togaCanvas.width !== videoEl.videoWidth) {
+                    togaCanvas.width = videoEl.videoWidth;
+                    togaCanvas.height = videoEl.videoHeight;
+                }
+
+                const results = faceLandmarker.detectForVideo(videoEl, performance.now());
+                togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
+
+                if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+                    const l = results.faceLandmarks[0];
+                    
+                    // Titik landmark: 10 (Dahi Atas), 234 (Pipi Kiri), 454 (Pipi Kanan), 33 (Mata Kiri), 263 (Mata Kanan)
+                    const faceWidth = Math.hypot(l[454].x - l[234].x, l[454].y - l[234].y) * togaCanvas.width;
+                    const togaW = faceWidth * 2.0; // Perbesar toga agar pas
+                    const togaH = togaW * (togaImg.naturalHeight / togaImg.naturalWidth);
+                    const angle = Math.atan2(l[263].y - l[33].y, l[263].x - l[33].x);
+
+                    togaCtx.save();
+                    // Letakkan di titik dahi atas (titik 10)
+                    togaCtx.translate(l[10].x * togaCanvas.width, l[10].y * togaCanvas.height);
+                    togaCtx.rotate(angle);
+                    // Gambar toga dengan offset Y agar berada di atas kepala
+                    togaCtx.drawImage(togaImg, -togaW / 2, -togaH * 0.95, togaW, togaH);
+                    togaCtx.restore();
+                }
+                requestAnimationFrameId = requestAnimationFrame(renderLoop);
+            }
+
+            window.switchCamera = function() {
+                currentFacingMode = (currentFacingMode === "user") ? "environment" : "user";
+                togaEnabled = false; document.querySelector('.btn-toggle-toga').classList.remove('active');
+                startUcapan();
+            };
+
+            window.stopUcapan = function() {
+                if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+                togaEnabled = false; cancelAnimationFrame(requestAnimationFrameId);
+                togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
+                document.getElementById('camera-ucapan-container').style.display='none';
+                document.getElementById('sc2').style.display='flex'; document.getElementById('bgVideo').style.display='block';
+            };
+
+            function initSwiper() {
+                const PHOTO_ASSETS = [
+                    "https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5","https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1","https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM","https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh","https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d","https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP","https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9",
+                    "https://lh3.googleusercontent.com/d/1jJa0dCK1dslCDaJu4OUgAAaYf0h_F0XC","https://lh3.googleusercontent.com/d/1r_TwJf6xyNc1rMmtHuKa7GeBNQt8wMGK","https://lh3.googleusercontent.com/d/1FBiCFQLslYO0l2VCezADBGjZyKpdpI3K","https://lh3.googleusercontent.com/d/1ukYQ3KUPjrwZji37Y9RahbtppdV6nl6h","https://lh3.googleusercontent.com/d/1PtSLiyfo3YUsKccL8o8nVrI6KBfjkFWe","https://lh3.googleusercontent.com/d/1rLIXZ8hKvDsvpHiw32p2S1Ybg-PJxDam","https://lh3.googleusercontent.com/d/1YGcZ4EV5F7FPngownc-VjKpBGIMJB--U"
+                ];
+                const wrapper = document.getElementById('ucapan-wrapper'); wrapper.innerHTML = '';
+                PHOTO_ASSETS.forEach((src, idx) => {
+                    const slide = document.createElement('div'); slide.className = 'swiper-slide';
+                    slide.innerHTML = `<div class="polaroid-frame" onclick="showMsg(${idx})"><img src="${src}"></div>`;
+                    wrapper.appendChild(slide);
+                });
+                new Swiper(".mySwiper", { effect:"coverflow", centeredSlides:true, slidesPerView:"auto", coverflowEffect:{rotate:30, stretch:0, depth:100, modifier:1, slideShadows:true} });
+            }
+
+            window.showMsg = function(idx) {
+                const msgs = ["Cie lulus! Proud of you sayang! 🎓✨", "I love you more than anything! 😍❤️", "Senyum kamu itu penyemangat aku. 😜❤️", "Bobo nyenyak, mimpiin aku ya! 😴💤", "Kamu tetep cakep meski belum mandi hihi 😊🌸", "Aku selalu ada di samping kamu. 🏆💖", "Happy Graduation Sayang! I'm so proud! 🎓💖", "Masa depan kita cerah bareng ya sayang! ✨", "Terima kasih sudah berjuang sampai sini! 💌", "Kamu itu versi terbaik dalam hidupku. 🧸❤️", "Jangan pernah capek buat jadi hebat ya! 💪", "Hati aku cuma buat kamu selamanya. 🔐💖", "Setiap detik sama kamu itu berharga banget. ⏳❤️", "I Love You, Thalita Sayang! ♾️🎓"];
+                document.getElementById('msg-text').innerText = msgs[idx]; document.getElementById('message-popup').style.display='block';
+                confetti({ particleCount: 60, spread: 70, origin: { y: 0.8 } });
+            };
+        })();
     </script>
 </body>
 </html>
