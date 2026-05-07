@@ -78,7 +78,6 @@
             position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1;
             overflow: hidden;
         }
-        /* mirror hanya untuk kamera depan */
         #cam-preview-wrapper.mirrored { transform: scaleX(-1); }
 
         #ucapan-video, #toga-canvas {
@@ -494,16 +493,38 @@
         }
 
         function zoomCard(el) {
-            if (currentActive) return; currentActive = el; el.style.zIndex="5000"; document.getElementById('global-back-btn').style.display='none'; document.getElementById('close-area').style.display='block';
-            if(el.id === 'card7') confetti({ particleCount:150, spread:70, origin:{y:0.6} });
-            gsap.to(el, { x:(window.innerWidth/2 - el.getBoundingClientRect().left - 52), y:(window.innerHeight/2 - el.getBoundingClientRect().top - 67), scale:2.3, rotation:0, duration:0.6 });
-            gsap.to("#global-reveal-btn", { scale:1, display:'block', duration:0.3 });
+            if (currentActive) return;
+            currentActive = el;
+            el.style.zIndex = "5000";
+            document.getElementById('global-back-btn').style.display = 'none';
+            document.getElementById('close-area').style.display = 'block';
+            if (el.id === 'card7') {
+                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            }
+            gsap.to(el, { 
+                x: (window.innerWidth/2 - el.getBoundingClientRect().left - 52), 
+                y: (window.innerHeight/2 - el.getBoundingClientRect().top - 67), 
+                scale: 2.3, rotation: 0, duration: 0.6, ease: "power2.out",
+                onComplete: () => {
+                    const btn = document.getElementById('global-reveal-btn');
+                    btn.style.display = "block";
+                    gsap.to(btn, { scale: 1, duration: 0.3 });
+                }
+            });
         }
 
         function backToBoard() {
-            const el = currentActive; el.querySelector('.message-box').classList.remove('active');
-            gsap.to("#global-reveal-btn", { scale:0, display:'none', duration:0.2 });
-            gsap.to(el, { x:0, y:0, scale:1, rotation:"random(-10,10)", duration:0.5, onComplete:() => { el.style.zIndex="100"; currentActive=null; document.getElementById('close-area').style.display='none'; document.getElementById('global-back-btn').style.display='block'; }});
+            if (!currentActive) return;
+            const el = currentActive;
+            el.querySelector('.message-box').classList.remove('active');
+            const btn = document.getElementById('global-reveal-btn');
+            gsap.to(btn, { scale: 0, duration: 0.2, onComplete: () => btn.style.display = "none" });
+            gsap.to(el, { x: 0, y: 0, scale: 1, rotation: "random(-10, 10)", duration: 0.5, onComplete: () => {
+                el.style.zIndex = "100";
+                currentActive = null;
+                document.getElementById('close-area').style.display = 'none';
+                document.getElementById('global-back-btn').style.display = 'block';
+            }});
         }
 
         function dodge(b) {
@@ -513,18 +534,42 @@
         }
 
         function openQuiz() {
+            // === PERBAIKAN: Reset posisi tombol "Engga" setiap kali quiz dibuka ===
+            const btnNo = document.getElementById('btnNo');
+            if (btnNo) {
+                gsap.set(btnNo, { x: 0, y: 0 }); // Kembalikan ke posisi awal
+            }
+            
             document.getElementById('quiz-text').innerText = currentActive.getAttribute('data-q');
             const isCard7 = currentActive.id === "card7";
             document.getElementById('std-buttons').style.display = isCard7 ? "none" : "block";
             document.getElementById('rating-buttons').style.display = isCard7 ? "grid" : "none";
-            document.getElementById('quiz-overlay').style.display='flex';
+            document.getElementById('quiz-overlay').style.display = 'flex';
         }
 
-        function solveQuiz() { document.getElementById('quiz-overlay').style.display='none'; document.getElementById('global-reveal-btn').style.display="none"; currentActive.querySelector('.message-box').classList.add('active'); }
-        function sendRating(v) { window.open(`https://wa.me/${nomorWA}?text=Sayang! Aku kasih rating ${v} buat webnya! 🎓❤️`, '_blank'); solveQuiz(); setTimeout(showFinalLetter, 2000); }
+        function solveQuiz() { 
+            document.getElementById('quiz-overlay').style.display = 'none'; 
+            document.getElementById('global-reveal-btn').style.display = "none"; 
+            currentActive.querySelector('.message-box').classList.add('active'); 
+        }
+
+        function sendRating(v) { 
+            window.open(`https://wa.me/${nomorWA}?text=Sayang! Aku kasih rating ${v} buat webnya! 🎓❤️`, '_blank'); 
+            solveQuiz(); 
+            setTimeout(showFinalLetter, 2000); 
+        }
+
         function showFinalLetter() {
-            document.getElementById('letter-overlay').style.display='flex'; const text = "Happy Graduation Sayangku... ❤️\n\nAku bangga banget sama kamu. Teruslah bersinar, lovee youu moreee sayanggg✨🎓";
-            let i=0; function type() { if(i<text.length){ document.getElementById("typewriter-text").innerHTML += text[i]==='\n'?'<br>':text[i]; i++; setTimeout(type,50); } } type();
+            document.getElementById('letter-overlay').style.display = 'flex'; 
+            const text = "Happy Graduation Sayangku... ❤️\n\nAku bangga banget sama kamu. Teruslah bersinar, lovee youu moreee sayanggg✨🎓";
+            let i = 0; 
+            function type() { 
+                if (i < text.length) { 
+                    document.getElementById("typewriter-text").innerHTML += text[i] === '\n' ? '<br>' : text[i]; 
+                    i++; setTimeout(type, 50); 
+                } 
+            } 
+            type();
         }
     </script>
 </body>
