@@ -31,83 +31,26 @@
 
         .petal { position: fixed; top: -10%; z-index: 1; pointer-events: none; color: var(--pink); font-size: 1.5rem; }
 
-        /* TOMBOL KEMBALI */
         .btn-back-floating {
             position: fixed; top: 25px; left: 20px; z-index: 30000;
-            background: white; border: 2.5px solid var(--pink); color: var(--dark-pink);
-            padding: 10px 20px; border-radius: 50px; font-weight: bold;
-            display: none; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px);
+            border: 2px solid white; color: var(--dark-pink);
+            padding: 8px 15px; border-radius: 50px; font-weight: bold;
+            display: none; cursor: pointer;
         }
 
         .screen { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9000; background: transparent; padding: 20px; text-align: center; }
-        .glass-card { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); padding: 30px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; flex-direction: column; gap: 15px; align-items: center; width: 90%; max-width: 320px; }
-        .btn-main { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; max-width: 260px; transition: 0.3s; }
+        .glass-card { background: rgba(255, 255, 255, 0.4); backdrop-filter: blur(8px); padding: 30px; border-radius: 25px; border: 1px solid rgba(255, 255, 255, 0.3); display: flex; flex-direction: column; gap: 15px; align-items: center; }
+        .btn-main { background: var(--pink); color: white; border: none; padding: 12px 25px; border-radius: 50px; font-weight: bold; cursor: pointer; width: 100%; max-width: 260px; }
 
         #board { position: relative; width: 100%; height: 100%; display: none; z-index: 10; overflow: hidden; }
-        .title { text-align: center; font-family: 'Caveat'; font-size: 2.5rem; color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.6); padding-top: 70px; pointer-events: none; position: relative; z-index: 5; }
-        
+        .title { text-align: center; font-family: 'Caveat'; font-size: 2.5rem; color: #fff; text-shadow: 2px 2px 8px rgba(0,0,0,0.6); padding-top: 60px; pointer-events: none; position: relative; z-index: 5; }
         .card { position: absolute; width: 105px; height: 135px; cursor: pointer; z-index: 100; }
         .card-inner { position: relative; width: 100%; height: 100%; background: white; padding: 6px 6px 18px 6px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); }
         .card img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; }
+        .card::after { content: ""; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 40px; height: 15px; background: rgba(255, 133, 162, 0.6); z-index: 30; }
 
-        /* GRADUATION DARLING OVERLAY - REVISI PENEMPATAN */
-        #grad-gallery-overlay {
-            position: fixed; inset: 0; z-index: 19000; display: none;
-            flex-direction: column; align-items: center; justify-content: flex-start;
-            background-image: url('https://lh3.googleusercontent.com/d/11AJKv9PqPzeM6eAO_R5GwvwOr5IchAlG');
-            background-size: 200%; /* PERBESAR LAGI BIAR JELAS */
-            background-position: center 20%; /* FOKUS KE AREA WAJAH (AGAK ATAS) */
-            background-repeat: no-repeat;
-            padding-top: 90px;
-        }
-        /* Overlay gradasi agar wajah tetap manis terlihat */
-        #grad-gallery-overlay::before {
-            content: ""; position: absolute; inset: 0; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0) 50%, rgba(255,209,220,0.3) 100%); 
-            z-index: 0;
-        }
-
-        .grad-title-text { font-family: 'Caveat'; font-size: 2.7rem; color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); margin-bottom: 20px; z-index: 10; }
-        .swiper-grad { width: 100%; height: 500px; z-index: 10; }
-        .swiper-slide-grad { width: 280px; display: flex; flex-direction: column; align-items: center; position: relative; }
-        
-        .grad-polaroid-frame {
-            background: white; padding: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-            width: 100%; height: 350px; border-radius: 4px;
-        }
-        .grad-polaroid-frame img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* CLOUD CAPTION */
-        .grad-cloud-caption {
-            opacity: 0; transform: translateY(30px) scale(0.5);
-            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            background: rgba(255, 255, 255, 0.95); padding: 15px 25px;
-            border-radius: 50px; margin-top: 25px; border: 2.5px solid var(--pink);
-            font-family: 'Caveat'; font-size: 1.5rem; color: #333; text-align: center;
-            width: 90%; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-        .swiper-slide-active .grad-cloud-caption { opacity: 1; transform: translateY(0) scale(1); }
-
-        /* KAMERA STYLES */
-        #camera-ucapan-container { position: fixed; inset: 0; z-index: 18000; display: none; flex-direction: column; align-items: center; background: #000; }
-        #cam-preview-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden; }
-        #ucapan-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-        #draggable-toga { position: absolute; top: 25%; left: 35%; width: 130px; z-index: 100; touch-action: none; filter: drop-shadow(0 0 10px gold); cursor: grab; }
-
-        /* MESSAGE SYSTEM */
-        .message-box { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0); width: 200px; background: white; padding: 15px; border-radius: 15px; border: 3px solid var(--pink); opacity: 0; transition: 0.4s; z-index: 6000; }
-        .message-box.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-        .message-box p { font-family: 'Caveat'; font-size: 1.3rem; font-weight: bold; text-align: center; color: #333; }
-        
-        #quiz-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; justify-content: center; align-items: center; z-index: 21000; backdrop-filter: blur(4px); }
-        .quiz-card { background: white; padding: 30px; border-radius: 25px; text-align: center; width: 300px; border: 4px solid var(--pink); }
-
-        #music-control { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: none; }
-        .vinyl { width: 45px; height: 45px; background: #333; border-radius: 50%; border: 3px solid #444; display: flex; align-items: center; justify-content: center; }
-        .spinning { animation: spin 3s linear infinite; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* POSISI POLAROID */
+        /* POSISI CARD */
         .p1 { top: 18%; left: 10%; transform: rotate(-5deg); }
         .p2 { top: 15%; right: 10%; transform: rotate(5deg); }
         .p3 { top: 35%; left: 35%; transform: rotate(-3deg); }
@@ -115,6 +58,44 @@
         .p5 { top: 54%; right: 8%; transform: rotate(-6deg); }
         .p6 { top: 75%; left: 15%; transform: rotate(-4deg); }
         .p7 { top: 73%; right: 15%; transform: rotate(8deg); }
+
+        .message-box { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0); width: 180px; background: white; padding: 15px; border-radius: 15px; border: 2px solid var(--pink); opacity: 0; transition: 0.4s; z-index: 6000; }
+        .message-box.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .message-box p { font-family: 'Caveat'; font-size: 1.2rem; font-weight: bold; text-align: center; color: #333; }
+
+        /* KAMERA ASLI */
+        #camera-ucapan-container { position: fixed; inset: 0; z-index: 18000; display: none; flex-direction: column; align-items: center; background: #000; }
+        #cam-preview-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden; }
+        #cam-preview-wrapper.mirrored { transform: scaleX(-1); }
+        #ucapan-video, #toga-canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        #draggable-toga { position: absolute; top: 0; left: 0; width: 120px; height: auto; z-index: 100; touch-action: none; cursor: grab; filter: drop-shadow(0 0 12px #ffd700); transform-origin: 0 0; will-change: transform; }
+        .ucapan-header { position: absolute; top: 8%; z-index: 10; font-family: 'Caveat'; font-size: 2.5rem; color: white; padding: 10px 30px; border-radius: 50px; background: rgba(0,0,0,0.4); border: 2px solid white; text-align: center; width: 90%; max-width: 400px; pointer-events: none; }
+        .btn-camera-ctrl { position: absolute; z-index: 20; background: rgba(0,0,0,0.4); color: white; border: 1.5px solid white; border-radius: 30px; font-weight: bold; padding: 10px 20px; backdrop-filter: blur(10px); cursor: pointer; }
+        .btn-close-ucapan { top: 25px; left: 20px; }
+        .btn-switch-camera { bottom: 25px; right: 25px; }
+
+        /* GRADUATION DARLING */
+        #grad-gallery-overlay {
+            position: fixed; inset: 0; z-index: 19000; display: none;
+            flex-direction: column; align-items: center; justify-content: flex-start;
+            background-image: url('https://lh3.googleusercontent.com/d/11AJKv9PqPzeM6eAO_R5GwvwOr5IchAlG');
+            background-size: 200%; background-position: center 20%; background-repeat: no-repeat; padding-top: 100px;
+        }
+        #grad-gallery-overlay::before { content: ""; position: absolute; inset: 0; background: rgba(0,0,0,0.1); z-index: 0; }
+        .grad-title-text { font-family: 'Caveat'; font-size: 2.7rem; color: white; text-shadow: 2px 2px 10px rgba(0,0,0,0.8); margin-bottom: 20px; z-index: 10; }
+        .swiper-grad { width: 100%; height: 500px; z-index: 10; }
+        .swiper-slide-grad { width: 280px; display: flex; flex-direction: column; align-items: center; position: relative; }
+        .grad-polaroid-frame { background: white; padding: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.4); width: 100%; height: 350px; border-radius: 4px; }
+        .grad-polaroid-frame img { width: 100%; height: 100%; object-fit: cover; }
+        .grad-cloud-caption { opacity: 0; transform: translateY(30px) scale(0.5); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(255, 255, 255, 0.95); padding: 15px 25px; border-radius: 50px; margin-top: 25px; border: 2.5px solid var(--pink); font-family: 'Caveat'; font-size: 1.5rem; color: #333; text-align: center; width: 90%; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .swiper-slide-active .grad-cloud-caption { opacity: 1; transform: translateY(0) scale(1); }
+
+        #music-control { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: none; }
+        .vinyl { width: 45px; height: 45px; background: #333; border-radius: 50%; border: 3px solid #444; display: flex; align-items: center; justify-content: center; }
+        .vinyl::after { content: ""; width: 12px; height: 12px; background: var(--pink); border-radius: 50%; border: 2px solid white; }
+        .spinning { animation: spin 3s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        #message-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 20px; z-index: 31000; display: none; text-align: center; width: 280px; border: 3px solid var(--pink); }
     </style>
 </head>
 <body onclick="createHeart(event)">
@@ -122,87 +103,84 @@
     <audio id="lagu" loop><source src="https://raw.githubusercontent.com/Bangyokoji/For-you/128404a69d31eac059a044f05b140b5055b8f3b0/Nadhif%20Basalamah%20-%20kota%20ini%20tak%20sama%20tanpamu%20(Official%20Lyric%20Video)%20-%20(320%20Kbps).mp3" type="audio/mpeg"></audio>
     <video id="bgVideo" autoplay muted loop playsinline><source src="https://raw.githubusercontent.com/Bangyokoji/For-you/4c439865a73d44cb052f5814a22e5129ad0ec2c3/PinDown.io_@ginagliss1473_1777946922.mp4" type="video/mp4"></video>
 
-    <!-- UI -->
     <button class="btn-back-floating" id="global-back-btn" onclick="backToModeSelection()">← Kembali</button>
-
     <div id="music-control" onclick="toggleMusic()"><div class="vinyl" id="vinyl"></div></div>
     <div id="close-area" onclick="backToBoard()" style="position:fixed; inset:0; z-index:4000; display:none;"></div>
-    <button id="global-reveal-btn" style="position:fixed; bottom:10%; left:50%; transform:translate(-50%, 0) scale(0); background:var(--dark-pink); color:white; border:none; padding:15px 30px; border-radius:50px; font-weight:bold; z-index:8000; display:none;" onclick="openQuiz()">Buka Pesan Sayang 💌</button>
+    <button id="global-reveal-btn" style="position:fixed; bottom:10%; left:50%; transform:translate(-50%, 0) scale(0); background:var(--dark-pink); color:white; border:none; padding:12px 25px; border-radius:50px; font-weight:bold; z-index:8000; display:none;" onclick="openQuiz()">Buka Pesan Sayang 💌</button>
 
-    <!-- OVERLAY GRADUATION DARLING -->
+    <!-- KAMERA ASLI -->
+    <div id="camera-ucapan-container">
+        <div id="cam-preview-wrapper"><video id="ucapan-video" autoplay playsinline></video><canvas id="toga-canvas"></canvas></div>
+        <img id="draggable-toga" src="https://raw.githubusercontent.com/Bangyokoji/For-you/7e6e04cf14e68d5925fccf66264853b3ad754b7d/1778046603580.png" crossorigin="anonymous">
+        <div class="ucapan-header">CONGRATULATIONS SAYANG</div>
+        <div class="swiper mySwiper" style="position: absolute; bottom: 8%; width: 100%; height: 260px; z-index: 10; padding-bottom: 20px;">
+            <div class="swiper-wrapper" id="ucapan-wrapper"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+        <button class="btn-camera-ctrl btn-close-ucapan" onclick="stopUcapan()">← Kembali</button>
+        <button class="btn-camera-ctrl btn-switch-camera" onclick="switchCamera()">🔄</button>
+    </div>
+
+    <!-- GRADUATION DARLING -->
     <div id="grad-gallery-overlay">
-        <h2 class="grad-title-text">Graduation bubbb🎓🧸</h2>
+        <h2 class="grad-title-text">Graduation Darling 🎓🧸</h2>
         <div class="swiper swiper-grad">
             <div class="swiper-wrapper">
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1oTUasXgoJByzhauv-XwuCGe74yYc3sKf"></div><div class="grad-cloud-caption">cakeppnyaa sayanggg. 😍☁️</div></div>
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1tauWbtDHhIYVOA6uTJKDt0580G74fwtn"></div><div class="grad-cloud-caption">lucuu yahh yang hebatt✨☁️</div></div>
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1hReor1qhGhbirnyHic-1rLPhRGSDRrRY"></div><div class="grad-cloud-caption">Senyummu bikin aku kehabisan kata🧸❤️☁️</div></div>
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1lO3Hh88qhT53k7RDDIuFxIfVvtm1gwPk"></div><div class="grad-cloud-caption">Semoga kamu suka yang🌹☁️</div></div>
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1lxsiwAEX_F8ec6O3fMYLFaf3etzd-ypn"></div><div class="grad-cloud-caption">foto bareng temen SD yang lucu hihi 🌟☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1oTUasXgoJByzhauv-XwuCGe74yYc3sKf"></div><div class="grad-cloud-caption">Cantiknya kesayangan aku pakai toga.. 😍☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1tauWbtDHhIYVOA6uTJKDt0580G74fwtn"></div><div class="grad-cloud-caption">Pintarnya Thalita, bangga banget! 🎓✨☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1hReor1qhGhbirnyHic-1rLPhRGSDRrRY"></div><div class="grad-cloud-caption">Senyummu itu loh, bikin melting.. 🧸❤️☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1lO3Hh88qhT53k7RDDIuFxIfVvtm1gwPk"></div><div class="grad-cloud-caption">Semoga berkah ya gelarnya sayang! 🌹☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1lxsiwAEX_F8ec6O3fMYLFaf3etzd-ypn"></div><div class="grad-cloud-caption">Tetap yang paling bersinar! 🌟☁️</div></div>
             </div>
             <div class="swiper-pagination"></div>
         </div>
     </div>
 
-    <!-- KAMERA -->
-    <div id="camera-ucapan-container">
-        <div id="cam-preview-wrapper"><video id="ucapan-video" autoplay playsinline></video></div>
-        <img id="draggable-toga" src="https://raw.githubusercontent.com/Bangyokoji/For-you/7e6e04cf14e68d5925fccf66264853b3ad754b7d/1778046603580.png">
-        <div class="swiper mySwiper" style="position:absolute; bottom:8%; width:100%; height:240px; z-index:10;">
-            <div class="swiper-wrapper" id="ucapan-wrapper"></div>
-        </div>
-        <div style="position:absolute; bottom:25px; right:20px; display:flex; gap:10px; z-index:20;">
-            <button class="btn-main" style="width:auto; background:rgba(0,0,0,0.5); border:1px solid white;" onclick="resetToga()">🔄 Reset Toga</button>
-            <button class="btn-main" style="width:auto; background:rgba(0,0,0,0.5); border:1px solid white;" onclick="switchCamera()">📷 Kamera</button>
-        </div>
-    </div>
-
-    <!-- MENU AWAL -->
+    <!-- SCREEN 1 & 2 -->
     <div id="sc1" class="screen">
         <div class="glass-card">
-            <div style="font-size:90px; cursor:pointer;" onclick="toSc2()">📩</div>
-            <p style="color:var(--dark-pink); font-weight:bold; font-size:1.2rem;">ADA PESAN UNTUKMU!</p>
+            <div style="font-size:80px; cursor:pointer;" onclick="toSc2()">📩</div>
+            <p style="color:var(--dark-pink); margin-top:15px; font-weight:bold;">ADA PESAN UNTUKMU!</p>
         </div>
     </div>
-
     <div id="sc2" class="screen" style="display:none;">
         <div class="glass-card">
             <h2 style="font-family:'Caveat'; font-size:2.2rem; color:#5d4037;">Siapkan hatimu ya? 🧸</h2>
             <button class="btn-main" onclick="startApp()">MASUK KE DUNIA KITA ✨</button>
-            <button class="btn-main" style="background:linear-gradient(135deg, #ff4d79, #ff85a2); margin-top:10px;" onclick="startUcapan()">KARTU UCAPAN KAMERA 💌</button>
-            <button class="btn-main" style="background:linear-gradient(135deg, #4fc3f7, #81d4fa); margin-top:10px;" onclick="openGradGallery()">GRADUATION PHOTO DARLING 🎓🧸</button>
+            <button class="btn-main" style="background:#ff4d79; margin-top:10px;" onclick="startUcapan()">KARTU UCAPAN KAMERA 💌</button>
+            <button class="btn-main" style="background:#4fc3f7; margin-top:10px;" onclick="openGradGallery()">GRADUATION PHOTO DARLING 🎓🧸</button>
         </div>
     </div>
 
-    <!-- BOARD UTAMA -->
+    <!-- BOARD POLAROID -->
     <div id="board">
         <h1 class="title">Our Beautiful Chapter ❤️</h1>
         <div class="card p1" data-q="Kamu bangga sama diri sendiri hari ini? 🎓" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5"></div><div class="message-box"><p>Cie lulus! Proud of you sayang! 🎓✨</p></div></div>
         <div class="card p2" data-q="Kamu sayang aku kan? ❤️" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1"></div><div class="message-box"><p>I love you more than anything! 😍❤️</p></div></div>
         <div class="card p3" data-q="Sering-sering senyum ya? 😊" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM"></div><div class="message-box"><p>Senyum kamu itu penyemangat aku. 😜❤️</p></div></div>
         <div class="card p4" data-q="Jangan lupa istirahat ya? 😴" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh"></div><div class="message-box"><p>Bobo nyenyak, mimpiin aku ya! 😴💤</p></div></div>
-        <div class="card p5" data-q="Jangan mbotok ya sayang? 🌸" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"></div><div class="message-box"><p>Hihi becanda sayang, kamu tetep cakep kok walau belum mandi 😊🌸</p></div></div>
+        <div class="card p5" data-q="jangan ke seringan mbotok yang,mbok kamu sering mbotok?" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"></div><div class="message-box"><p>hihihi becanda sayangg,kamu ngga mandi be tetep cakep,tapi tetep mandi penting buat kebersihan😊🌸</p></div></div>
         <div class="card p6" data-q="Semangat buat kedepannya? 🤝" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP"></div><div class="message-box"><p>Aku selalu ada di samping kamu. 🏆💖</p></div></div>
-        <div class="card p7" id="card7" data-q="Rating buat web buatan aku? 🌸" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9"></div><div class="message-box"><p>Happy Graduation Thalita Sayang! 🎓💖</p></div></div>
+        <div class="card p7" id="card7" data-q="Rating buat web buatan aku? 🌸" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9"></div><div class="message-box"><p>Happy Graduation Sayang! I'm so proud! 🎓💖</p></div></div>
     </div>
 
-    <!-- QUIZ & LETTER -->
-    <div id="quiz-overlay">
-        <div class="quiz-card">
-            <p id="quiz-text" style="margin-bottom:20px; font-weight:bold; font-size:1.1rem; color:#444;"></p>
+    <!-- QUIZ SYSTEM -->
+    <div id="quiz-overlay" style="position:fixed; inset:0; background:rgba(255,255,255,0.2); display:none; justify-content:center; align-items:center; z-index:35000; backdrop-filter:blur(2px);">
+        <div class="quiz-card" style="background:white; padding:25px; border-radius:25px; text-align:center; width:280px; border:4px solid var(--pink);">
+            <p id="quiz-text" style="margin-bottom:20px; font-weight:bold;"></p>
             <div id="std-buttons">
                 <button class="btn-main" style="width:auto; padding:10px 20px; margin:5px;" onclick="solveQuiz()">Iya bub ❤️</button>
-                <button id="btnNo" class="btn-main" style="width:auto; padding:10px 20px; margin:5px; background:#ccc;" onpointerenter="dodge(this)" onclick="dodge(this)">Engga 😜</button>
+                <button id="btnNo" class="btn-main" style="width:auto; padding:10px 20px; margin:5px; background:#eee; color:#777;" onpointerenter="dodge(this)" onclick="dodge(this)">Engga 😜</button>
             </div>
             <div id="rating-buttons" style="display:none; grid-template-columns:repeat(3,1fr); gap:8px;">
-                <button class="btn-main" style="padding:10px; border-radius:10px;" onclick="sendRating('10')">10</button>
-                <button class="btn-main" style="padding:10px; border-radius:10px;" onclick="sendRating('100')">100</button>
-                <button class="btn-main" style="padding:10px; border-radius:10px;" onclick="sendRating('Infinity')">∞ ❤️</button>
+                <button class="btn-main" style="padding:10px; border-radius:12px;" onclick="sendRating('10')">10</button>
+                <button class="btn-main" style="padding:10px; border-radius:12px;" onclick="sendRating('100')">100</button>
+                <button class="btn-main" style="padding:10px; border-radius:12px;" onclick="sendRating('Infinity')">∞ ❤️</button>
             </div>
         </div>
     </div>
 
-    <div id="letter-overlay" style="position:fixed; inset:0; background:rgba(255,255,255,0.98); display:none; z-index:25000; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center;">
+    <div id="letter-overlay" style="position:fixed; inset:0; background:rgba(255,255,255,0.98); display:none; z-index:40000; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center;">
         <div id="typewriter-text" style="font-family:'Caveat'; font-size:1.7rem; color:#5d4037; line-height:1.4;"></div>
         <button class="btn-main" onclick="location.reload()" style="margin-top:30px; width:auto;">Mainkan Lagi ❤️</button>
     </div>
@@ -210,81 +188,120 @@
     <script>
         const nomorWA = "6285713813068";
         let currentActive = null;
-        let cameraStream = null;
         const audio = document.getElementById('lagu');
         const vinyl = document.getElementById('vinyl');
         const bgVideo = document.getElementById('bgVideo');
-        let gradSwiper = null;
+        let gradSwiperInstance = null;
 
-        setInterval(() => {
-            if (document.getElementById('camera-ucapan-container').style.display === 'flex') return;
-            const p = document.createElement('div');
-            p.className = 'petal'; p.innerHTML = ['🌸', '❤️', '✨'][Math.floor(Math.random() * 3)];
-            p.style.left = Math.random() * 100 + 'vw';
-            document.body.appendChild(p);
-            gsap.to(p, { y: window.innerHeight + 50, x: "random(-50, 50)", rotation: 360, duration: 5, onComplete: () => p.remove() });
-        }, 800);
+        // ==================== RESTORASI LOGIKA ASLI ====================
+        (function() {
+            let cameraStream = null;
+            const videoEl = document.getElementById("ucapan-video");
+            const togaCanvas = document.getElementById("toga-canvas");
+            const togaCtx = togaCanvas.getContext("2d");
+            const previewWrapper = document.getElementById("cam-preview-wrapper");
+            const togaImg = document.getElementById("draggable-toga");
+            let currentFacingMode = "user";
+            let animationFrameId;
+            let togaState = { x: 0, y: 0, scale: 1, rotation: 0 };
 
+            const sparkles = [];
+            for (let i = 0; i < 30; i++) sparkles.push({ x: Math.random(), y: Math.random(), size: Math.random() * 2 + 1, speed: Math.random() * 0.5 + 0.2, opacity: Math.random() });
+
+            function drawSparkles() {
+                if (videoEl.videoWidth === 0) return;
+                togaCanvas.width = videoEl.videoWidth; togaCanvas.height = videoEl.videoHeight;
+                togaCtx.clearRect(0, 0, togaCanvas.width, togaCanvas.height);
+                sparkles.forEach(s => {
+                    s.y -= s.speed; if (s.y < -0.1) { s.y = 1.1; s.x = Math.random(); }
+                    togaCtx.fillStyle = `rgba(255, 215, 0, ${s.opacity})`;
+                    togaCtx.beginPath(); togaCtx.arc(s.x * togaCanvas.width, s.y * togaCanvas.height, s.size, 0, Math.PI * 2); togaCtx.fill();
+                });
+                animationFrameId = requestAnimationFrame(drawSparkles);
+            }
+
+            function updateToga() { togaImg.style.transform = `translate(${togaState.x}px, ${togaState.y}px) rotate(${togaState.rotation}deg) scale(${togaState.scale})`; }
+
+            function initTogaInteraction() {
+                const w = window.innerWidth; const h = window.innerHeight;
+                togaState.x = w/2 - 60; togaState.y = h/2 - 60; updateToga();
+                let dragging = false, sx, sy, stX, stY, initD = 0, initA = 0, startS = 1, startR = 0;
+                togaImg.addEventListener('pointerdown', e => { dragging = true; sx = e.clientX; sy = e.clientY; stX = togaState.x; stY = togaState.y; togaImg.setPointerCapture(e.pointerId); });
+                window.addEventListener('pointermove', e => { if (!dragging) return; togaState.x = stX + (e.clientX - sx); togaState.y = stY + (e.clientY - sy); updateToga(); });
+                window.addEventListener('pointerup', () => dragging = false);
+                togaImg.addEventListener('touchstart', e => { if (e.touches.length === 2) { 
+                    const t1 = e.touches[0], t2 = e.touches[1];
+                    initD = Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
+                    initA = Math.atan2(t2.clientY-t1.clientY, t2.clientX-t1.clientX) * 180 / Math.PI;
+                    startS = togaState.scale; startR = togaState.rotation;
+                }});
+                togaImg.addEventListener('touchmove', e => { if (e.touches.length === 2) {
+                    const t1 = e.touches[0], t2 = e.touches[1];
+                    const dist = Math.hypot(t1.clientX-t2.clientX, t1.clientY-t2.clientY);
+                    const ang = Math.atan2(t2.clientY-t1.clientY, t2.clientX-t1.clientX) * 180 / Math.PI;
+                    togaState.scale = Math.min(Math.max(startS * (dist/initD), 0.2), 5);
+                    togaState.rotation = startR + (ang - initA); updateToga();
+                }});
+            }
+
+            window.switchCamera = async function() {
+                currentFacingMode = currentFacingMode === "user" ? "environment" : "user";
+                if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
+                cameraStream = stream; videoEl.srcObject = stream;
+                previewWrapper.classList.toggle("mirrored", currentFacingMode === "user");
+            };
+
+            window.startUcapan = async function() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
+                    cameraStream = stream; videoEl.srcObject = stream;
+                    previewWrapper.classList.toggle('mirrored', currentFacingMode === "user");
+                    document.getElementById('sc2').style.display = 'none'; document.getElementById('bgVideo').style.display = 'none';
+                    document.getElementById('camera-ucapan-container').style.display = 'flex';
+                    initCamSwiper(); drawSparkles(); initTogaInteraction();
+                } catch (e) { alert("Izin kamera ditolak 🎥"); }
+            };
+
+            window.stopUcapan = function() {
+                if (cameraStream) cameraStream.getTracks().forEach(t => t.stop());
+                cancelAnimationFrame(animationFrameId);
+                document.getElementById('camera-ucapan-container').style.display = 'none';
+                document.getElementById('sc2').style.display = 'flex'; document.getElementById('bgVideo').style.display = 'block';
+            };
+
+            function initCamSwiper() {
+                const assets = ["https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5", "https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1", "https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM", "https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh", "https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"];
+                const wrap = document.getElementById('ucapan-wrapper'); wrap.innerHTML = '';
+                assets.forEach((s, i) => wrap.innerHTML += `<div class="swiper-slide"><div class="card-inner" style="width:140px; height:180px; padding:6px; background:white;" onclick="showMsg(${i})"><img src="${s}" style="width:100%; height:100%; object-fit:cover;"></div></div>`);
+                new Swiper(".mySwiper", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true });
+            }
+        })();
+
+        // ==================== NAVIGASI & ANIMASI TERJUN ====================
         function toSc2() { gsap.to("#sc1", { opacity:0, duration:0.5, onComplete:() => { document.getElementById('sc1').style.display='none'; document.getElementById('sc2').style.display='flex'; }}); }
         
         function backToModeSelection() {
-            document.getElementById('board').style.display='none';
-            document.getElementById('camera-ucapan-container').style.display='none';
-            document.getElementById('grad-gallery-overlay').style.display='none';
-            document.getElementById('global-back-btn').style.display='none';
-            document.getElementById('bgVideo').style.display='block';
-            document.getElementById('sc2').style.display='flex';
-            gsap.to([bgVideo, "#sc2"], { opacity: 1, duration: 0.5 });
-            if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); cameraStream = null; }
+            document.getElementById('board').style.display='none'; document.getElementById('grad-gallery-overlay').style.display='none';
+            document.getElementById('global-back-btn').style.display='none'; document.getElementById('bgVideo').style.display='block';
+            document.getElementById('sc2').style.display='flex'; gsap.to([bgVideo, "#sc2"], { opacity: 1, duration: 0.5 });
         }
 
         function openGradGallery() {
-            document.getElementById('grad-gallery-overlay').style.display = 'flex';
-            document.getElementById('bgVideo').style.display = 'none';
-            document.getElementById('sc2').style.display = 'none';
-            document.getElementById('global-back-btn').style.display = 'block';
-            if (!gradSwiper) {
-                gradSwiper = new Swiper(".swiper-grad", {
-                    effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true,
-                    autoplay: { delay: 3000 }, pagination: { el: ".swiper-pagination" },
-                    coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false }
-                });
-            }
+            document.getElementById('grad-gallery-overlay').style.display = 'flex'; document.getElementById('bgVideo').style.display = 'none';
+            document.getElementById('sc2').style.display = 'none'; document.getElementById('global-back-btn').style.display = 'block';
+            if (!gradSwiperInstance) gradSwiperInstance = new Swiper(".swiper-grad", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true, autoplay: { delay: 3000 }, coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false }});
         }
-
-        async function startUcapan() {
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
-                document.getElementById('ucapan-video').srcObject = cameraStream;
-                document.getElementById('camera-ucapan-container').style.display = 'flex';
-                document.getElementById('sc2').style.display = 'none';
-                document.getElementById('global-back-btn').style.display = 'block';
-                document.getElementById('bgVideo').style.display = 'none';
-                initCamSwiper();
-                initTogaDrag();
-            } catch (e) { alert("Kamera error 🎥"); }
-        }
-
-        function initCamSwiper() {
-            const assets = ["https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5", "https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1", "https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM", "https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh", "https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"];
-            const wrap = document.getElementById('ucapan-wrapper'); wrap.innerHTML = '';
-            assets.forEach(s => { wrap.innerHTML += `<div class="swiper-slide"><div class="card-inner" style="width:140px; height:180px;"><img src="${s}"></div></div>`; });
-            new Swiper(".mySwiper", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true });
-        }
-
-        function initTogaDrag() {
-            const toga = document.getElementById('draggable-toga');
-            let x = 0, y = 0, dragging = false, sx, sy;
-            toga.addEventListener('pointerdown', e => { dragging = true; sx = e.clientX - x; sy = e.clientY - y; toga.setPointerCapture(e.pointerId); });
-            window.addEventListener('pointermove', e => { if (!dragging) return; x = e.clientX - sx; y = e.clientY - sy; toga.style.transform = `translate(${x}px, ${y}px)`; });
-            window.addEventListener('pointerup', () => dragging = false);
-        }
-
-        function resetToga() { gsap.to("#draggable-toga", { x: 0, y: 0, duration: 0.5 }); }
 
         function startApp() { 
             audio.play().catch(()=>{}); document.getElementById('music-control').style.display='flex'; document.getElementById('global-back-btn').style.display='block'; vinyl.classList.add('spinning');
-            gsap.to([bgVideo, "#sc2"], { opacity:0, duration:0.5, onComplete:() => { bgVideo.style.display='none'; document.getElementById('sc2').style.display='none'; document.getElementById('board').style.display='block'; }});
+            gsap.to([bgVideo, "#sc2"], { opacity:0, duration:0.5, onComplete:() => { 
+                bgVideo.style.display='none'; 
+                document.getElementById('sc2').style.display='none'; 
+                document.getElementById('board').style.display='block'; 
+                // ANIMASI TERJUN BALIK DARI FILE ASLI
+                gsap.from(".card", { y: 1000, rotation: 45, stagger: 0.1, duration: 1, ease: "back.out" }); 
+            }});
         }
 
         function zoomCard(el) {
@@ -310,7 +327,7 @@
             document.getElementById('quiz-overlay').style.display = 'flex';
         }
 
-        function solveQuiz() { document.getElementById('quiz-overlay').style.display = 'none'; currentActive.querySelector('.message-box').classList.add('active'); }
+        function solveQuiz() { document.getElementById('quiz-overlay').style.display = 'none'; document.getElementById('global-reveal-btn').style.display = "none"; currentActive.querySelector('.message-box').classList.add('active'); }
         function dodge(b) { gsap.to(b, { x: (Math.random()-0.5)*250, y: (Math.random()-0.5)*250, duration: 0.2 }); }
         function sendRating(v) { window.open(`https://wa.me/${nomorWA}?text=Sayang! Aku kasih rating ${v} buat webnya! 🎓❤️`, '_blank'); solveQuiz(); setTimeout(showFinalLetter, 2000); }
 
@@ -322,9 +339,19 @@
 
         function toggleMusic() { audio.paused ? (audio.play(), vinyl.classList.add('spinning')) : (audio.pause(), vinyl.classList.remove('spinning')); }
         function createHeart(e) {
-            const h = document.createElement('div'); h.innerHTML = '❤️'; h.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; z-index:35000; pointer-events:none;`;
+            const h = document.createElement('div'); h.innerHTML = '❤️'; h.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; z-index:50000; pointer-events:none;`;
             document.body.appendChild(h); gsap.to(h, { y:-100, opacity:0, duration:1, onComplete:() => h.remove() });
         }
+        function showMsg(idx) {
+            const msgs = ["Proud of you! 🎓", "I love you! ❤️", "Keep smiling! 😊", "Sweet dreams! 😴", "Always pretty! 🌸"];
+            document.getElementById('msg-text').innerText = msgs[idx]; document.getElementById('message-popup').style.display = 'block';
+        }
+
+        setInterval(() => {
+            if (document.getElementById('camera-ucapan-container').style.display === 'flex') return;
+            const p = document.createElement('div'); p.className = 'petal'; p.innerHTML = '🌸'; p.style.left = Math.random() * 100 + 'vw';
+            document.body.appendChild(p); gsap.to(p, { y: window.innerHeight + 50, x: "random(-50, 50)", rotation: 360, duration: 5, onComplete: () => p.remove() });
+        }, 800);
     </script>
 </body>
 </html>
