@@ -33,7 +33,7 @@
 
         .btn-back-floating {
             position: fixed; top: 25px; left: 20px; z-index: 30000;
-            background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px);
             border: 2px solid white; color: var(--dark-pink);
             padding: 8px 15px; border-radius: 50px; font-weight: bold;
             display: none; cursor: pointer;
@@ -62,7 +62,7 @@
         .message-box.active { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         .message-box p { font-family: 'Caveat'; font-size: 1.2rem; font-weight: bold; text-align: center; color: #333; }
 
-        /* MODE KAMERA (STYLE ASLI) */
+        /* MODE KAMERA */
         #camera-ucapan-container { position: fixed; inset: 0; z-index: 18000; display: none; flex-direction: column; align-items: center; background: #000; }
         #cam-preview-wrapper { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; overflow: hidden; }
         #cam-preview-wrapper.mirrored { transform: scaleX(-1); }
@@ -77,7 +77,7 @@
         .btn-close-ucapan { top: 25px; left: 20px; }
         .btn-switch-camera { bottom: 25px; right: 25px; }
 
-        /* GRADUATION DARLING STYLES */
+        /* GRADUATION DARLING */
         #grad-gallery-overlay {
             position: fixed; inset: 0; z-index: 19000; display: none;
             flex-direction: column; align-items: center; justify-content: flex-start;
@@ -93,12 +93,15 @@
         .grad-cloud-caption { opacity: 0; transform: translateY(30px) scale(0.5); transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); background: rgba(255, 255, 255, 0.95); padding: 15px 25px; border-radius: 50px; margin-top: 25px; border: 2.5px solid var(--pink); font-family: 'Caveat'; font-size: 1.5rem; color: #333; text-align: center; width: 90%; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
         .swiper-slide-active .grad-cloud-caption { opacity: 1; transform: translateY(0) scale(1); }
 
+        /* MUSIC & POPUP FIX */
         #music-control { position: fixed; bottom: 20px; right: 20px; z-index: 10000; display: none; }
         .vinyl { width: 45px; height: 45px; background: #333; border-radius: 50%; border: 3px solid #444; display: flex; align-items: center; justify-content: center; }
         .vinyl::after { content: ""; width: 12px; height: 12px; background: var(--pink); border-radius: 50%; border: 2px solid white; }
         .spinning { animation: spin 3s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        #message-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 20px; z-index: 31000; display: none; text-align: center; width: 280px; border: 3px solid var(--pink); }
+        
+        /* FIX: Z-INDEX POPUP PALING TINGGI AGAR KELIHATAN DI KAMERA */
+        #message-popup { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 25px; border-radius: 20px; z-index: 99999; display: none; text-align: center; width: 280px; border: 3px solid var(--pink); box-shadow: 0 15px 50px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body onclick="createHeart(event)">
@@ -111,7 +114,7 @@
     <div id="close-area" onclick="backToBoard()" style="position:fixed; inset:0; z-index:4000; display:none;"></div>
     <button id="global-reveal-btn" style="position:fixed; bottom:10%; left:50%; transform:translate(-50%, 0) scale(0); background:var(--dark-pink); color:white; border:none; padding:12px 25px; border-radius:50px; font-weight:bold; z-index:8000; display:none;" onclick="openQuiz()">Buka Pesan Sayang 💌</button>
 
-    <!-- MODE KAMERA (ASLI) -->
+    <!-- MODE KAMERA -->
     <div id="camera-ucapan-container">
         <div id="cam-preview-wrapper">
             <video id="ucapan-video" autoplay playsinline></video>
@@ -129,20 +132,20 @@
 
     <!-- GRADUATION DARLING -->
     <div id="grad-gallery-overlay">
-        <h2 class="grad-title-text">Graduation Darling 🎓🧸</h2>
+        <h2 class="grad-title-text">Graduation Darling 🎓</h2>
         <div class="swiper swiper-grad">
             <div class="swiper-wrapper">
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1oTUasXgoJByzhauv-XwuCGe74yYc3sKf"></div><div class="grad-cloud-caption">cakeppp yang kamuu😍☁️</div></div>
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1tauWbtDHhIYVOA6uTJKDt0580G74fwtn"></div><div class="grad-cloud-caption">love you more yang✨☁️</div></div>
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1hReor1qhGhbirnyHic-1rLPhRGSDRrRY"></div><div class="grad-cloud-caption">senyummu bikin aku ngelag 🧸❤️☁️</div></div>
-                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1lO3Hh88qhT53k7RDDIuFxIfVvtm1gwPk"></div><div class="grad-cloud-caption">Semoga selalu sama² yh sayangg🌹☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1oTUasXgoJByzhauv-XwuCGe74yYc3sKf"></div><div class="grad-cloud-caption">hehdh kakunbanget aku kalo foto😭☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1tauWbtDHhIYVOA6uTJKDt0580G74fwtn"></div><div class="grad-cloud-caption">senyummu bikin ngelag✨☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1hReor1qhGhbirnyHic-1rLPhRGSDRrRY"></div><div class="grad-cloud-caption">love you more yang 🧸❤️☁️</div></div>
+                <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1lO3Hh88qhT53k7RDDIuFxIfVvtm1gwPk"></div><div class="grad-cloud-caption">Semoga selalu sama² yh🌹☁️</div></div>
                 <div class="swiper-slide swiper-slide-grad"><div class="grad-polaroid-frame"><img src="https://lh3.googleusercontent.com/d/1lxsiwAEX_F8ec6O3fMYLFaf3etzd-ypn"></div><div class="grad-cloud-caption">lucu yang foto sama kanca sd🌟☁️</div></div>
             </div>
             <div class="swiper-pagination"></div>
         </div>
     </div>
 
-    <!-- SCREEN 1 & 2 -->
+    <!-- MAIN SCREENS -->
     <div id="sc1" class="screen">
         <div class="glass-card">
             <div style="font-size:80px; cursor:pointer;" onclick="toSc2()">📩</div>
@@ -158,16 +161,22 @@
         </div>
     </div>
 
-    <!-- BOARD -->
+    <!-- BOARD POLAROID -->
     <div id="board">
         <h1 class="title">Our Beautiful Chapter ❤️</h1>
         <div class="card p1" data-q="Kamu bangga sama diri sendiri hari ini? 🎓" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1kV5l1-cLJ1aLQd_I-zBOtjK9ehbfmNc5"></div><div class="message-box"><p>Cie lulus! Proud of you sayang! 🎓✨</p></div></div>
         <div class="card p2" data-q="Kamu sayang aku kan? ❤️" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1X_sdUfVzD7TEMWeglfQdMkfNFHxsbUM1"></div><div class="message-box"><p>I love you more than anything! 😍❤️</p></div></div>
         <div class="card p3" data-q="Sering-sering senyum ya? 😊" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/17CNVqgj58T4fwRHDfGoPSpql1mocdgWM"></div><div class="message-box"><p>Senyum kamu itu penyemangat aku. 😜❤️</p></div></div>
         <div class="card p4" data-q="Jangan lupa istirahat ya? 😴" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/15N-ZS0lhqvB5GZUnjKBZKObkyHV7xwHh"></div><div class="message-box"><p>Bobo nyenyak, mimpiin aku ya! 😴💤</p></div></div>
-        <div class="card p5" data-q="jangan ke seringan mbotok yang,mbok kamu sering mbotok?" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"></div><div class="message-box"><p>hihihi becanda sayangg,kamu ngga mandi be tetep cakep,tapi tetep mandi penting buat kebersihan😊🌸</p></div></div>
+        <div class="card p5" data-q="jangan ke seringan mbotok yang,mbok kamu sering mbotok?" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1jxXCedbKke_eFqFJtEr1Gs_M4IlyCr9d"></div><div class="message-box"><p>hihihi becanda sayangg,kamu ngga mandi be tetep cakep🌸</p></div></div>
         <div class="card p6" data-q="Semangat buat kedepannya? 🤝" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zYvu4jKFWsl4OI-2b2wos5aT2f8uyUaP"></div><div class="message-box"><p>Aku selalu ada di samping kamu. 🏆💖</p></div></div>
         <div class="card p7" id="card7" data-q="Rating buat web buatan aku? 🌸" onclick="zoomCard(this)"><div class="card-inner"><img src="https://lh3.googleusercontent.com/d/1zhBg0KVZpBSYn3nt8F566bJadLw-GbT9"></div><div class="message-box"><p>Happy Graduation Sayang! I'm so proud! 🎓💖</p></div></div>
+    </div>
+
+    <!-- POPUP PESAN (GLOBAL) -->
+    <div id="message-popup">
+        <p id="msg-text" style="font-family:'Caveat'; font-size:1.4rem; font-weight:bold; color:#333; margin-bottom:15px;"></p>
+        <button class="btn-main" onclick="document.getElementById('message-popup').style.display='none'" style="width:auto; padding:8px 20px;">Tutup 💖</button>
     </div>
 
     <!-- QUIZ SYSTEM -->
@@ -199,7 +208,7 @@
         const bgVideo = document.getElementById('bgVideo');
         let gradSwiperInstance = null;
 
-        // ==================== RESTORASI KAMERA ASLI ====================
+        // ==================== LOGIKA KAMERA ====================
         (function() {
             let cameraStream = null;
             const videoEl = document.getElementById("ucapan-video");
@@ -294,80 +303,37 @@
                     "https://lh3.googleusercontent.com/d/1YGcZ4EV5F7FPngownc-VjKpBGIMJB--U"
                 ];
                 const wrap = document.getElementById('ucapan-wrapper'); wrap.innerHTML = '';
-                assets.forEach((s, i) => wrap.innerHTML += `<div class="swiper-slide swiper-slide-cam"><div class="polaroid-frame" onclick="showMsgCam(${i})"><img src="${s}"></div></div>`);
-                new Swiper(".mySwiperCam", { 
-                    effect: "coverflow", 
-                    centeredSlides: true, 
-                    slidesPerView: "auto", 
-                    loop: true,
-                    coverflowEffect: { rotate: 30, stretch: 0, depth: 100, modifier: 1, slideShadows: true },
-                    pagination: { el: ".swiper-pagination", clickable: true }
+                // PERBAIKAN: Gunakan pemanggilan showMsgCam yang benar
+                assets.forEach((s, i) => {
+                    const slide = document.createElement('div');
+                    slide.className = 'swiper-slide swiper-slide-cam';
+                    slide.innerHTML = `<div class="polaroid-frame" onclick="window.showMsgCam(${i})"><img src="${s}"></div>`;
+                    wrap.appendChild(slide);
                 });
+                new Swiper(".mySwiperCam", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true, coverflowEffect: { rotate: 30, stretch: 0, depth: 100, modifier: 1, slideShadows: true }, pagination: { el: ".swiper-pagination", clickable: true } });
             }
         })();
 
         // ==================== NAVIGASI & BOARD ====================
         function toSc2() { gsap.to("#sc1", { opacity:0, duration:0.5, onComplete:() => { document.getElementById('sc1').style.display='none'; document.getElementById('sc2').style.display='flex'; }}); }
-        
-        function backToModeSelection() {
-            document.getElementById('board').style.display='none'; document.getElementById('grad-gallery-overlay').style.display='none';
-            document.getElementById('global-back-btn').style.display='none'; document.getElementById('bgVideo').style.display='block';
-            document.getElementById('sc2').style.display='flex'; gsap.to([bgVideo, "#sc2"], { opacity: 1, duration: 0.5 });
-        }
+        function backToModeSelection() { document.getElementById('board').style.display='none'; document.getElementById('grad-gallery-overlay').style.display='none'; document.getElementById('global-back-btn').style.display='none'; document.getElementById('bgVideo').style.display='block'; document.getElementById('sc2').style.display='flex'; gsap.to([bgVideo, "#sc2"], { opacity: 1, duration: 0.5 }); }
+        function openGradGallery() { document.getElementById('grad-gallery-overlay').style.display = 'flex'; document.getElementById('bgVideo').style.display = 'none'; document.getElementById('sc2').style.display = 'none'; document.getElementById('global-back-btn').style.display = 'block'; if (!gradSwiperInstance) gradSwiperInstance = new Swiper(".swiper-grad", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true, autoplay: { delay: 3000 }, coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false }}); }
+        function startApp() { audio.play(); document.getElementById('music-control').style.display='flex'; document.getElementById('global-back-btn').style.display='block'; vinyl.classList.add('spinning'); gsap.to([bgVideo, "#sc2"], { opacity:0, duration:0.5, onComplete:() => { bgVideo.style.display='none'; document.getElementById('sc2').style.display='none'; document.getElementById('board').style.display='block'; gsap.from(".card", { y: 1000, rotation: 45, stagger: 0.1, duration: 1, ease: "back.out" }); }}); }
+        function zoomCard(el) { if (currentActive) return; currentActive = el; el.style.zIndex = "5000"; document.getElementById('close-area').style.display = 'block'; document.getElementById('global-back-btn').style.display='none'; gsap.to(el, { x: (window.innerWidth/2 - el.getBoundingClientRect().left - 52), y: (window.innerHeight/2 - el.getBoundingClientRect().top - 67), scale: 2.3, rotation: 0, duration: 0.6, onComplete: () => { const btn = document.getElementById('global-reveal-btn'); btn.style.display = "block"; gsap.to(btn, { scale: 1, duration: 0.3 }); }}); }
+        function backToBoard() { if (!currentActive) return; const el = currentActive; el.querySelector('.message-box').classList.remove('active'); gsap.to("#global-reveal-btn", { scale: 0, duration: 0.2, onComplete: () => document.getElementById('global-reveal-btn').style.display = "none" }); gsap.to(el, { x: 0, y: 0, scale: 1, rotation: "random(-10, 10)", duration: 0.5, onComplete: () => { el.style.zIndex = "100"; currentActive = null; document.getElementById('close-area').style.display = 'none'; document.getElementById('global-back-btn').style.display='block'; }}); }
 
-        function openGradGallery() {
-            document.getElementById('grad-gallery-overlay').style.display = 'flex'; document.getElementById('bgVideo').style.display = 'none';
-            document.getElementById('sc2').style.display = 'none'; document.getElementById('global-back-btn').style.display = 'block';
-            if (!gradSwiperInstance) gradSwiperInstance = new Swiper(".swiper-grad", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true, autoplay: { delay: 3000 }, coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false }});
-        }
-
-        function startApp() { 
-            audio.play().catch(()=>{}); document.getElementById('music-control').style.display='flex'; document.getElementById('global-back-btn').style.display='block'; vinyl.classList.add('spinning');
-            gsap.to([bgVideo, "#sc2"], { opacity:0, duration:0.5, onComplete:() => { 
-                bgVideo.style.display='none'; document.getElementById('sc2').style.display='none'; document.getElementById('board').style.display='block'; 
-                gsap.from(".card", { y: 1000, rotation: 45, stagger: 0.1, duration: 1, ease: "back.out" }); 
-            }});
-        }
-
-        function zoomCard(el) {
-            if (currentActive) return; currentActive = el;
-            el.style.zIndex = "5000"; document.getElementById('close-area').style.display = 'block'; document.getElementById('global-back-btn').style.display='none';
-            gsap.to(el, { x: (window.innerWidth/2 - el.getBoundingClientRect().left - 52), y: (window.innerHeight/2 - el.getBoundingClientRect().top - 67), scale: 2.3, rotation: 0, duration: 0.6, onComplete: () => {
-                const btn = document.getElementById('global-reveal-btn'); btn.style.display = "block"; gsap.to(btn, { scale: 1, duration: 0.3 });
-            }});
-        }
-
-        function backToBoard() {
-            if (!currentActive) return;
-            const el = currentActive; el.querySelector('.message-box').classList.remove('active');
-            gsap.to("#global-reveal-btn", { scale: 0, duration: 0.2, onComplete: () => document.getElementById('global-reveal-btn').style.display = "none" });
-            gsap.to(el, { x: 0, y: 0, scale: 1, rotation: "random(-10, 10)", duration: 0.5, onComplete: () => { el.style.zIndex = "100"; currentActive = null; document.getElementById('close-area').style.display = 'none'; document.getElementById('global-back-btn').style.display='block'; }});
-        }
-
-        function openQuiz() {
-            document.getElementById('quiz-text').innerText = currentActive.getAttribute('data-q');
-            const isRating = currentActive.id === "card7";
-            document.getElementById('std-buttons').style.display = isRating ? "none" : "block";
-            document.getElementById('rating-buttons').style.display = isRating ? "grid" : "none";
-            document.getElementById('quiz-overlay').style.display = 'flex';
-        }
-
+        // ==================== QUIZ SYSTEM ====================
+        function openQuiz() { document.getElementById('quiz-text').innerText = currentActive.getAttribute('data-q'); const isRating = currentActive.id === "card7"; document.getElementById('std-buttons').style.display = isRating ? "none" : "block"; document.getElementById('rating-buttons').style.display = isRating ? "grid" : "none"; document.getElementById('quiz-overlay').style.display = 'flex'; }
         function solveQuiz() { document.getElementById('quiz-overlay').style.display = 'none'; document.getElementById('global-reveal-btn').style.display = "none"; currentActive.querySelector('.message-box').classList.add('active'); }
         function dodge(b) { gsap.to(b, { x: (Math.random()-0.5)*250, y: (Math.random()-0.5)*250, duration: 0.2 }); }
         function sendRating(v) { window.open(`https://wa.me/${nomorWA}?text=Sayang! Aku kasih rating ${v} buat webnya! 🎓❤️`, '_blank'); solveQuiz(); setTimeout(showFinalLetter, 2000); }
+        function showFinalLetter() { document.getElementById('letter-overlay').style.display = 'flex'; const text = "Happy Graduation Sayangku Thalita... ❤️\n\nAku bangga banget sama kamu. Teruslah bersinar, I love you moreee sayanggg✨🎓"; let i = 0; function type() { if (i < text.length) { document.getElementById("typewriter-text").innerHTML += text[i] === '\n' ? '<br>' : text[i]; i++; setTimeout(type, 50); } } type(); }
 
-        function showFinalLetter() {
-            document.getElementById('letter-overlay').style.display = 'flex'; 
-            const text = "Happy Graduation Sayangku Thalita... ❤️\n\nAku bangga banget sama kamu. Teruslah bersinar, I love you moreee sayanggg✨🎓";
-            let i = 0; function type() { if (i < text.length) { document.getElementById("typewriter-text").innerHTML += text[i] === '\n' ? '<br>' : text[i]; i++; setTimeout(type, 50); } } type();
-        }
-
+        // ==================== GLOBAL UTILS ====================
         function toggleMusic() { audio.paused ? (audio.play(), vinyl.classList.add('spinning')) : (audio.pause(), vinyl.classList.remove('spinning')); }
-        function createHeart(e) {
-            const h = document.createElement('div'); h.innerHTML = '❤️'; h.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; z-index:50000; pointer-events:none; color:var(--dark-pink); font-size:20px;`;
-            document.body.appendChild(h); gsap.to(h, { y:-100, opacity:0, duration:1, onComplete:() => h.remove() });
-        }
+        function createHeart(e) { const h = document.createElement('div'); h.innerHTML = '❤️'; h.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; z-index:99999; pointer-events:none; color:var(--dark-pink); font-size:20px;`; document.body.appendChild(h); gsap.to(h, { y:-100, opacity:0, duration:1, onComplete:() => h.remove() }); }
         
+        // FIX: Fungsi global agar bisa dipanggil dari Swiper Kamera
         window.showMsgCam = function(idx) {
             const msgs = [
                 "Cie lulus! Proud of you sayang! 🎓✨",
