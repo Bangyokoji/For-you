@@ -208,6 +208,10 @@
         const bgVideo = document.getElementById('bgVideo');
         let gradSwiperInstance = null;
 
+        // URL LAGU
+        const laguUtama = "https://raw.githubusercontent.com/Bangyokoji/For-you/128404a69d31eac059a044f05b140b5055b8f3b0/Nadhif%20Basalamah%20-%20kota%20ini%20tak%20sama%20tanpamu%20(Official%20Lyric%20Video)%20-%20(320%20Kbps).mp3";
+        const laguGraduation = "https://raw.githubusercontent.com/Bangyokoji/For-you/6620a779511322f7b99eb91780ff1b32feaa5729/Donne%20Maula%20-%20Bercinta%20Lewat%20Kata%20(Official%20Lyric%20Video)%20OST%20Jatuh%20Cinta%20Seperti%20di%20Film-Film.mp3";
+
         // ==================== LOGIKA KAMERA ====================
         (function() {
             let cameraStream = null;
@@ -303,7 +307,6 @@
                     "https://lh3.googleusercontent.com/d/1YGcZ4EV5F7FPngownc-VjKpBGIMJB--U"
                 ];
                 const wrap = document.getElementById('ucapan-wrapper'); wrap.innerHTML = '';
-                // PERBAIKAN: Gunakan pemanggilan showMsgCam yang benar
                 assets.forEach((s, i) => {
                     const slide = document.createElement('div');
                     slide.className = 'swiper-slide swiper-slide-cam';
@@ -316,8 +319,38 @@
 
         // ==================== NAVIGASI & BOARD ====================
         function toSc2() { gsap.to("#sc1", { opacity:0, duration:0.5, onComplete:() => { document.getElementById('sc1').style.display='none'; document.getElementById('sc2').style.display='flex'; }}); }
-        function backToModeSelection() { document.getElementById('board').style.display='none'; document.getElementById('grad-gallery-overlay').style.display='none'; document.getElementById('global-back-btn').style.display='none'; document.getElementById('bgVideo').style.display='block'; document.getElementById('sc2').style.display='flex'; gsap.to([bgVideo, "#sc2"], { opacity: 1, duration: 0.5 }); }
-        function openGradGallery() { document.getElementById('grad-gallery-overlay').style.display = 'flex'; document.getElementById('bgVideo').style.display = 'none'; document.getElementById('sc2').style.display = 'none'; document.getElementById('global-back-btn').style.display = 'block'; if (!gradSwiperInstance) gradSwiperInstance = new Swiper(".swiper-grad", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true, autoplay: { delay: 3000 }, coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false }}); }
+        
+        function backToModeSelection() { 
+            document.getElementById('board').style.display='none'; 
+            document.getElementById('grad-gallery-overlay').style.display='none'; 
+            document.getElementById('global-back-btn').style.display='none'; 
+            document.getElementById('bgVideo').style.display='block'; 
+            document.getElementById('sc2').style.display='flex'; 
+            
+            // Ganti lagu balik ke lagu utama
+            if(audio.getAttribute('src') !== laguUtama) {
+                audio.src = laguUtama;
+                audio.play();
+            }
+            
+            gsap.to([bgVideo, "#sc2"], { opacity: 1, duration: 0.5 }); 
+        }
+
+        function openGradGallery() { 
+            document.getElementById('grad-gallery-overlay').style.display = 'flex'; 
+            document.getElementById('bgVideo').style.display = 'none'; 
+            document.getElementById('sc2').style.display = 'none'; 
+            document.getElementById('global-back-btn').style.display = 'block'; 
+            
+            // Ganti lagu ke lagu khusus Graduation Darling
+            audio.src = laguGraduation;
+            audio.play();
+            vinyl.classList.add('spinning');
+            document.getElementById('music-control').style.display='flex';
+
+            if (!gradSwiperInstance) gradSwiperInstance = new Swiper(".swiper-grad", { effect: "coverflow", centeredSlides: true, slidesPerView: "auto", loop: true, autoplay: { delay: 3000 }, coverflowEffect: { rotate: 20, stretch: 0, depth: 100, modifier: 1, slideShadows: false }}); 
+        }
+
         function startApp() { audio.play(); document.getElementById('music-control').style.display='flex'; document.getElementById('global-back-btn').style.display='block'; vinyl.classList.add('spinning'); gsap.to([bgVideo, "#sc2"], { opacity:0, duration:0.5, onComplete:() => { bgVideo.style.display='none'; document.getElementById('sc2').style.display='none'; document.getElementById('board').style.display='block'; gsap.from(".card", { y: 1000, rotation: 45, stagger: 0.1, duration: 1, ease: "back.out" }); }}); }
         function zoomCard(el) { if (currentActive) return; currentActive = el; el.style.zIndex = "5000"; document.getElementById('close-area').style.display = 'block'; document.getElementById('global-back-btn').style.display='none'; gsap.to(el, { x: (window.innerWidth/2 - el.getBoundingClientRect().left - 52), y: (window.innerHeight/2 - el.getBoundingClientRect().top - 67), scale: 2.3, rotation: 0, duration: 0.6, onComplete: () => { const btn = document.getElementById('global-reveal-btn'); btn.style.display = "block"; gsap.to(btn, { scale: 1, duration: 0.3 }); }}); }
         function backToBoard() { if (!currentActive) return; const el = currentActive; el.querySelector('.message-box').classList.remove('active'); gsap.to("#global-reveal-btn", { scale: 0, duration: 0.2, onComplete: () => document.getElementById('global-reveal-btn').style.display = "none" }); gsap.to(el, { x: 0, y: 0, scale: 1, rotation: "random(-10, 10)", duration: 0.5, onComplete: () => { el.style.zIndex = "100"; currentActive = null; document.getElementById('close-area').style.display = 'none'; document.getElementById('global-back-btn').style.display='block'; }}); }
@@ -333,7 +366,6 @@
         function toggleMusic() { audio.paused ? (audio.play(), vinyl.classList.add('spinning')) : (audio.pause(), vinyl.classList.remove('spinning')); }
         function createHeart(e) { const h = document.createElement('div'); h.innerHTML = '❤️'; h.style.cssText = `position:fixed; left:${e.clientX}px; top:${e.clientY}px; z-index:99999; pointer-events:none; color:var(--dark-pink); font-size:20px;`; document.body.appendChild(h); gsap.to(h, { y:-100, opacity:0, duration:1, onComplete:() => h.remove() }); }
         
-        // FIX: Fungsi global agar bisa dipanggil dari Swiper Kamera
         window.showMsgCam = function(idx) {
             const msgs = [
                 "Cie lulus! Proud of you sayang! 🎓✨",
